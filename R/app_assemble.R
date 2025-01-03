@@ -41,6 +41,7 @@ assemble_server <- function(id) {
     output$table <- renderReactable({
       isolate(req(rv$data)) |>
         reactable(
+          resizable = TRUE,
           compact = TRUE,
           defaultPageSize = 100,
           showPageSizeOptions = TRUE,
@@ -87,14 +88,14 @@ assemble_server <- function(id) {
             ),
             ID = colDef(
               show = T,
-              width = 120,
+              minWidth = 120,
               sticky = "left",
               html = T,
               cell = rt_longtext()
             ),
             Taxon = colDef(
               show = T,
-              width = 140,
+              minWidth = 140,
               sticky = "left",
               html = T,
               cell = rt_longtext()
@@ -109,12 +110,12 @@ assemble_server <- function(id) {
             trimmed_reads = colDef(
               show = T,
               name = "Reads",
-              width = 100
+              minWidth = 100
             ),
             mean_length = colDef(
               show = T,
               name = "Read Length",
-              width = 100
+              minWidth = 100
             ),
             assemble_opts = colDef(
               show = T,
@@ -130,7 +131,7 @@ assemble_server <- function(id) {
             ),
             length = colDef(
               show = TRUE,
-              width = 140,
+              minWidth = 140,
               name = "Assembly Length",
               html = TRUE,
               cell = rt_longtext()
