@@ -586,10 +586,10 @@ assemble_server <- function(id) {
       if (tolower(Sys.getenv("RSTUDIO_PROGRAM_MODE")) == "server") {
         owd <- setwd(pth)
         message(getwd())
-        later::later(function() {
-          message("test")
-          message(getwd())
-          rstudioapi::executeCommand("goToWorkingDir")
+        message("test")
+        message(getwd())
+        rstudioapi::executeCommand("goToWorkingDir")
+        later::later(delay = 0.5, function() {
           setwd(owd)
           message("test2")
           message(getwd())
