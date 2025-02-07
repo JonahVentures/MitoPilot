@@ -584,22 +584,25 @@ assemble_server <- function(id) {
       )
       req(file.exists(pth))
       if (tolower(Sys.getenv("RSTUDIO_PROGRAM_MODE")) == "server") {
-        owd <- getwd()
-        message("old dir")
-        message(getwd())
-        setwd(pth)
-        message("new dir")
-        message(getwd())
-        later::later(delay = 2, function() {
-          message("delay 1")
-          rstudioapi::executeCommand("goToWorkingDir")
-        })
-        later::later(delay = 2, function() {
-          message("delay 2")
-          setwd(owd)
-          message("old dir")
-          message(getwd())
-        })
+        rstudioapi::filesPaneNavigate(pth)
+        print("did that work?")
+
+        #owd <- getwd()
+        #message("old dir")
+        #message(getwd())
+        #setwd(pth)
+        #message("new dir")
+        #message(getwd())
+        #later::later(delay = 2, function() {
+        #  message("delay 1")
+        #  rstudioapi::filesPaneNavigate(pth)
+        #})
+        #later::later(delay = 2, function() {
+        #  message("delay 2")
+        #  setwd(owd)
+        #  message("old dir")
+        #  message(getwd())
+        #})
         req(F)
       } else {
         utils::browseURL(pth)
