@@ -585,9 +585,14 @@ assemble_server <- function(id) {
       req(file.exists(pth))
       if (tolower(Sys.getenv("RSTUDIO_PROGRAM_MODE")) == "server") {
         owd <- setwd(pth)
+        message(getwd())
         later::later(function() {
+          message("test")
+          message(getwd())
           rstudioapi::executeCommand("goToWorkingDir")
           setwd(owd)
+          message("test2")
+          message(getwd())
         })
         req(F)
       } else {
