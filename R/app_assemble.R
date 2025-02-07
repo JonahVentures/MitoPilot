@@ -589,7 +589,8 @@ assemble_server <- function(id) {
         message("test")
         message(getwd())
         rstudioapi::executeCommand("goToWorkingDir")
-        later::later(delay = 0.5, function() {
+        later::later(delay = 2, function() {
+          message("delay")
           setwd(owd)
           message("test2")
           message(getwd())
