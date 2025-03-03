@@ -37,6 +37,8 @@ new_project <- function(
     min_depth = 2000000,
     executor = c("local", "awsbatch", "NMNH_Hydra", "NOAA_SEDNA"),
     container = "drleopold/mitopilot",
+    custom_seeds_db = NULL,
+    custom_labels_db = NULL,
     config = NULL,
     Rproj = TRUE,
     force = FALSE,
@@ -69,6 +71,14 @@ new_project <- function(
     stop("Invalid executor.")
   }
 
+  # Create directory if it doesn't exist ----
+  if (!dir.exists(path)) {
+    message("Creating project directory: ", path)
+    dir.create(path, recursive = TRUE)
+  }
+
+  path <- normalizePath(path)
+
   # Initialize RStudio Project ----
   # (optional & only if running form RStudio)
   if (Rproj && !isFALSE(Sys.getenv("RSTUDIO", FALSE))) {
@@ -90,12 +100,14 @@ new_project <- function(
     message("Overwriting existing database")
     file.remove(db)
   }
+
   new_db(
     db_path = file.path(path, ".sqlite"),
     mapping_fn = mapping_out,
     mapping_id = mapping_id,
     ...
   )
+
 
   # Config file ----
   config <- config %||% app_sys(paste0("config.", executor))

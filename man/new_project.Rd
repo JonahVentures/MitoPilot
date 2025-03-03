@@ -12,6 +12,8 @@ new_project(
   min_depth = 2e+06,
   executor = c("local", "awsbatch", "NMNH_Hydra", "NOAA_SEDNA"),
   container = "drleopold/mitopilot",
+  custom_seeds_db = NULL,
+  custom_labels_db = NULL,
   config = NULL,
   Rproj = TRUE,
   force = FALSE,
