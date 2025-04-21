@@ -87,11 +87,15 @@ annotate <- function(
   )
 
   # Combine annotations ----
+  # If there are overlapping tRNA annotations, only keep the annotation from trnascan
+  annotations_mitos <- annotations_mitos[!(annotations_mitos$gene %in% annotations_trnaScan$gene),]
   annotations <- dplyr::bind_rows(
     annotations_trnaScan,
     annotations_mitos
   ) |>
     dplyr::arrange(contig, pos1)
+
+
 
 
   # Rotate assembly and annotation if circular
