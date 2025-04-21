@@ -339,8 +339,6 @@ export_files <- function(
 
         }
 
-
-
         return()
       }
 
@@ -420,6 +418,78 @@ export_files <- function(
         } else {
           paste(c(seq_name, "MitoPilot", "exon", cur$pos1, cur$pos2, ".", cur$direction, ".", f9), collapse = "\t") |>
             cat(file = gff_fn, sep = "\n", append = TRUE)
+        }
+
+        # export rRNAs individually
+        if(gene_export){
+          # EXTRACT GENE FROM ASSEMBLY
+          # make directory for gene if it doesn't exist
+          group_geneName_pth <- file.path(group_pth, "genes", cur$gene)
+          dir.create(group_geneName_pth, recursive = T, showWarnings = F)
+
+          # get gene region from assembly
+          gene = Biostrings::subseq(seq, start = cur$pos1, end = cur$pos2)
+
+          # update FASTA header with gene name
+          head_split <- strsplit(fasta_header_gene, "\\s+")
+          head_split[[1]][1] <- paste0(head_split[[1]][1], "_", cur$gene_uniq)
+          head_split[[1]][length(head_split[[1]])] <- paste0(head_split[[1]][length(head_split[[1]])], ", ", cur$product)
+          head <- paste(c(head_split[[1]]), sep=" ", collapse=" ")
+          names(gene) <- stringr::str_glue_data(dat, head)
+
+          # reverse complement if needed
+          if (cur$direction == "-") {
+            gene = Biostrings::reverseComplement(gene)
+          }
+
+          # write FASTA
+          gene_fn <- file.path(export_path, paste0(.x, "_", cur$gene_uniq, ".fasta"))
+          Biostrings::writeXStringSet(gene, filepath = gene_fn)
+
+          # fix the start and stop position
+          pos1_new = 1
+          pos2_new = abs(cur$pos2 - cur$pos1)
+
+          # write gene feature table
+          gene_tbl_fn <- file.path(export_path, paste0(.x, "_", cur$gene_uniq, ".tbl"))
+          if (file.exists(gene_tbl_fn)) {
+            file.remove(gene_tbl_fn)
+          }
+          cat(paste0(">Feature ", .x, "_", cur$gene_uniq), file = gene_tbl_fn, sep = "\n")
+          paste(c(pos1_new, pos2_new, "gene"), collapse = "\t") |>
+            cat(file = gene_tbl_fn, sep = "\n", append = TRUE)
+          paste0("\t\t\tgene\t", cur$gene_uniq) |>
+            cat(file = gene_tbl_fn, sep = "\n", append = TRUE)
+          paste(c(pos1_new, pos2_new, "rRNA"), collapse = "\t") |>
+            cat(file = gene_tbl_fn, sep = "\n", append = TRUE)
+          paste("\t\t\tproduct\t", cur$product) |>
+            cat(file = gene_tbl_fn, sep = "\n", append = TRUE)
+          if (length(note) > 0) {
+            paste0("\t\t\tnote\t", note) |>
+              cat(file = gene_tbl_fn, sep = "\n", append = TRUE)
+          }
+
+          # concatenate sequences and tables by gene
+          if (length(group) == 1) {
+            group_gene_tbl <- file.path(group_geneName_pth, paste0(group, "_", cur$gene, ".tbl"))
+            stringr::str_glue(
+              "cat {gene_tbl_fn} >> {group_gene_tbl}"
+            ) |> system()
+            group_gene_fasta <- file.path(group_geneName_pth, paste0(group, "_", cur$gene, ".fasta"))
+            stringr::str_glue(
+              "cat {gene_fn} >> {group_gene_fasta}"
+            ) |> system()
+          }
+
+          # concatenate all sequences and tables
+          if (length(group) == 1) {
+            stringr::str_glue(
+              "cat {gene_tbl_fn} >> {group_allgene_tbl_fn}"
+            ) |> system()
+            stringr::str_glue(
+              "cat {gene_fn} >> {group_allgene_fasta}"
+            ) |> system()
+          }
         }
 
         return()

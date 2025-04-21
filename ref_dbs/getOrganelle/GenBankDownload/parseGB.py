@@ -14,6 +14,7 @@
 
 from Bio import SeqIO
 import sys
+import os
 
 def genbank_to_mitochondrial_fasta(genbank_file):
 	"""
@@ -52,6 +53,17 @@ def genbank_to_mitochondrial_fasta(genbank_file):
 									gene_count += 1
 								elif feature.type == "CDS":
 									CDS_count += 1
+									# write CDS to fasta file
+									cds_seq = feature.extract(record.seq)
+									try:
+										with open("extractedgenes.temp.fasta", "a") as fa_file:
+											fa_file.write(f">{feature.qualifiers['gene'][0]} {record.id}\n")
+											fa_file.write(str(cds_seq) + "\n")
+									except:
+										print("WARNING: no gene qualifier for " + record.id + " CDS feature, skipped:")
+										print(feature.qualifiers)
+										print("")
+										continue
 							if gene_count > 1:
 								multigene_seqs.append(record)
 							elif gene_count == 0 and CDS_count == 0:
@@ -77,7 +89,7 @@ def genbank_to_mitochondrial_fasta(genbank_file):
 	with open("nogene.fasta", "w") as fa_file:
 		SeqIO.write(nogene_seqs, fa_file, "fasta")
 
-	with open("singlegene.fasta", "w") as fa_file:
+	with open("singlegene.temp.fasta", "w") as fa_file:
 		SeqIO.write(singlelocus_seqs, fa_file, "fasta")
 
 def get_product_name(record):
@@ -108,8 +120,21 @@ def remove_duplicate_sequences(fasta_file, output_file):
 	with open(output_file, "w") as output_handle:
 		SeqIO.write(unique_sequences.values(), output_handle, "fasta")
 
-# Example usage
 genbank_to_mitochondrial_fasta(sys.argv[1])
+
+# combine fastas
+filenames = ['singlegene.temp.fasta', 'extractedgenes.temp.fasta']
+with open('singlegene.fasta', 'w') as outfile:
+    for fname in filenames:
+        with open(fname) as infile:
+            for line in infile:
+                outfile.write(line)
+
 remove_duplicate_sequences("singlegene.fasta", "singlegene.dedup.fasta")
 remove_duplicate_sequences("multigene.fasta", "multigene.dedup.fasta")
 remove_duplicate_sequences("nogene.fasta", "nogene.dedup.fasta")
+
+# cleanup temp files
+os.remove("extractedgenes.temp.fasta")
+os.remove("singlegene.temp.fasta")
+os.remove("test.fasta")

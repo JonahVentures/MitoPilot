@@ -196,7 +196,7 @@ export_server <- function(id) {
         ),
         shinyWidgets::prettyCheckbox(
           ns("export_genes"),
-          "Export individual genes",
+          "Export individual protein-coding and rRNA genes",
           value = F,
           status = "primary"
         ),
