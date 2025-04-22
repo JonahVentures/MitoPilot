@@ -26,7 +26,7 @@ annotate <- function(
     genetic_code = "2",
     ref_db = "Chordata",
     ref_dir = "/home/harpua/Jzonah/MitoPilot/ref_dbs/Mitos2",
-    mitos_opts = "--intron 0 --oril 0 --trna 0",
+    mitos_opts = "--intron 0 --oril 0",
     mitos_condaenv = "mitos",
     trnaScan_opts = "-M vert",
     trnaScan_condaenv = "base",
@@ -87,10 +87,14 @@ annotate <- function(
   )
 
   # Combine annotations ----
+  # If there are overlapping tRNA annotations, only keep the annotation from trnascan
+  annotations_mitos <- annotations_mitos[!(annotations_mitos$tRNA_ID %in% annotations_trnaScan$tRNA_ID),]
   annotations <- dplyr::bind_rows(
     annotations_trnaScan,
     annotations_mitos
-  ) |>
+  ) |> dplyr::select(-dplyr::any_of('tRNA_ID')) |> # remove temporary tRNA_ID column
+    dplyr::mutate(dplyr::across('gene', stringr::str_replace, 'trnS1|tnrS2', 'trnS')) |> # Rename trnS1 and trnS2 to trnS
+    dplyr::mutate(dplyr::across('gene', stringr::str_replace, 'trnL1|trnL2', 'trnL')) |> # Rename trnL1 and trnL2 to trnL
     dplyr::arrange(contig, pos1)
 
 

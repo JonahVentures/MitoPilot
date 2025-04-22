@@ -86,50 +86,53 @@ curate_diptera_mito <- function(
 
   # rRNA ----
   ## enforce + strand ----
-  rRNA_rev <- annotations |>
-    dplyr::filter(type == "rRNA") |>
-    dplyr::filter(all(direction == "-"), .by = "contig") |>
-    dplyr::pull(contig) |>
-    unique()
-  for (seqid in rRNA_rev) {
-    wdth <- assembly[contig_key[seqid]]@ranges@width
-    annotations_updated <- annotations |>
-      dplyr::filter(contig == !!seqid) |>
-      dplyr::mutate(
-        pos1_old = pos1,
-        pos2_old = pos2,
-        pos1 = wdth - pos2_old + 1,
-        pos2 = wdth - pos1_old + 1,
-        direction = dplyr::case_match(
-          direction, "+" ~ "-", "-" ~ "+"
-        )
-      ) |>
-      dplyr::select(-pos1_old, -pos2_old)
-
-    annotations <- annotations |>
-      dplyr::filter(contig != seqid) |>
-      dplyr::bind_rows(
-        annotations_updated
-      ) |>
-      dplyr::arrange(contig, pos1)
-
-    assembly[contig_key[seqid]] <- assembly[contig_key[seqid]] |>
-      Biostrings::reverseComplement()
-
-    if (!is.null(coverage)) {
-      coverage_flip <- coverage |>
-        dplyr::filter(SeqId == !!seqid) |>
-        dplyr::arrange(desc(Position)) |>
-        dplyr::mutate(
-          Position = dplyr::row_number(),
-          Call = as.character(assembly) |> stringr::str_split("") |> unlist()
-        )
-      coverage <- dplyr::bind_rows(
-        coverage |> dplyr::filter(SeqId != seqid),
-        coverage_flip
-      )
-    }
-  }
+  # DO NOT DO THIS FOR DIPTERANS
+  # See Drosophila melanogaster reference mitogenome (GenBank NC_024511.2), rRNAs are on the negative strand
+  #
+  # rRNA_rev <- annotations |>
+  #   dplyr::filter(type == "rRNA") |>
+  #   dplyr::filter(all(direction == "-"), .by = "contig") |>
+  #   dplyr::pull(contig) |>
+  #   unique()
+  # for (seqid in rRNA_rev) {
+  #   wdth <- assembly[contig_key[seqid]]@ranges@width
+  #   annotations_updated <- annotations |>
+  #     dplyr::filter(contig == !!seqid) |>
+  #     dplyr::mutate(
+  #       pos1_old = pos1,
+  #       pos2_old = pos2,
+  #       pos1 = wdth - pos2_old + 1,
+  #       pos2 = wdth - pos1_old + 1,
+  #       direction = dplyr::case_match(
+  #         direction, "+" ~ "-", "-" ~ "+"
+  #       )
+  #     ) |>
+  #     dplyr::select(-pos1_old, -pos2_old)
+  #
+  #   annotations <- annotations |>
+  #     dplyr::filter(contig != seqid) |>
+  #     dplyr::bind_rows(
+  #       annotations_updated
+  #     ) |>
+  #     dplyr::arrange(contig, pos1)
+  #
+  #   assembly[contig_key[seqid]] <- assembly[contig_key[seqid]] |>
+  #     Biostrings::reverseComplement()
+  #
+  #   if (!is.null(coverage)) {
+  #     coverage_flip <- coverage |>
+  #       dplyr::filter(SeqId == !!seqid) |>
+  #       dplyr::arrange(desc(Position)) |>
+  #       dplyr::mutate(
+  #         Position = dplyr::row_number(),
+  #         Call = as.character(assembly) |> stringr::str_split("") |> unlist()
+  #       )
+  #     coverage <- dplyr::bind_rows(
+  #       coverage |> dplyr::filter(SeqId != seqid),
+  #       coverage_flip
+  #     )
+  #   }
+  # }
 
   ## apply punctuation model ----
   gene_idx <- which(annotations$type == "rRNA")
