@@ -57,11 +57,22 @@ pipeline_server <- function(id) {
           span(stringr::str_glue("{session$userData$mode}: updating {length(samples)} samples")),
           span(id = ns("gears"), class = "gears paused")
         ),
+        div(
+          style = "display: flex; justify-content: space-between; align-items: left;",
+          shinyWidgets::prettyCheckbox(
+            ns("resume"),
+            label = "Resume previous run?",
+            status = "primary",
+            inline = TRUE,
+            value = TRUE
+          )
+        ),
         size = "l",
         h5("Nextflow Command:"),
         div(
+          style = "display: flex; justify-content: space-between; align-items: left;",
           class = "code-block",
-          paste(c("nextflow", nf_cmd()), collapse = " ")
+          textOutput(ns("nf_code_block"))
         ),
         div(
           id = ns("progress_div"),
@@ -91,6 +102,23 @@ pipeline_server <- function(id) {
           )
         )
       ) |> showModal()
+    })
+
+    # Render nextflow command
+    output$nf_code_block <- shiny::renderText({
+      paste(c("nextflow", nf_cmd()), collapse = " ")
+    })
+
+    # Toggle "-resume" Nextflow option
+    observeEvent(input$resume, {
+      if(isTRUE(input$resume)) { # if box is checked, keep "-resume" flag
+        nf_cmd(nextflow_cmd(session$userData$mode))
+      } else { # if box is unchecked, remove "-resume" flag
+        nf_cmd(stringr::str_remove(nextflow_cmd(session$userData$mode), pattern = "-resume"))
+      }
+      output$nf_code_block <- shiny::renderText({
+        paste(c("nextflow", nf_cmd()), collapse = " ")
+      })
     })
 
     # Start ----
