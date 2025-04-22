@@ -26,7 +26,7 @@ annotate <- function(
     genetic_code = "2",
     ref_db = "Chordata",
     ref_dir = "/home/harpua/Jzonah/MitoPilot/ref_dbs/Mitos2",
-    mitos_opts = "--intron 0 --oril 0 --trna 0",
+    mitos_opts = "--intron 0 --oril 0",
     mitos_condaenv = "mitos",
     trnaScan_opts = "-M vert",
     trnaScan_condaenv = "base",
