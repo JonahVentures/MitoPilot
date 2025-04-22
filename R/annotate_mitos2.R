@@ -112,7 +112,7 @@ annotate_mitos2 <- function(
               .after = "gene"
             ) |>
             dplyr::mutate(
-              anitcodon = dplyr::case_when(
+              anticodon = dplyr::case_when(
                 type == "tRNA" ~ toupper(stringr::str_extract(stringr::str_extract(names(x), "\\S+$"), '(?<=\\()[^\\^\\)]+')), # get anticodon
                 .default = NA_character_
               ),
