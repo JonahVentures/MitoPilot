@@ -98,8 +98,6 @@ annotate <- function(
     dplyr::arrange(contig, pos1)
 
 
-
-
   # Rotate assembly and annotation if circular
   if(stringr::str_detect(names(assembly), "circular")){
     rotate_results <- rotate_asmb(
