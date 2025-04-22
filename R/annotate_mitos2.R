@@ -118,6 +118,13 @@ annotate_mitos2 <- function(
               ),
               .after = "direction"
             ) |>
+            dplyr::mutate(
+              tRNA_ID = dplyr::case_when(
+                type == "tRNA" ~ paste0(product, "-", anticodon) # create temporary ID to compare with tRNAscan-SE results
+                .default = NA_character_
+              ),
+              .after = "direction"
+            ) |>
             dplyr::mutate(length = as.numeric(ifelse(pos1 < pos2,
                                                      (1 + abs(pos2 - pos1)),
                                                      ifelse(pos1 > pos2,

@@ -110,7 +110,8 @@ annotate_trnaScan <- function(
         direction = ifelse(cur$begin < cur$end, "+", "-"),
         anticodon = cur$anticodon
       ) |>
-        dplyr::mutate(length = 1 + abs(pos2 - pos1), .before = "direction")
+        dplyr::mutate(length = 1 + abs(pos2 - pos1), .before = "direction") |>
+        dplyr::mutate(tRNA_ID = paste0(product, "-", anticodon), .after = "direction") # create temporary ID to compare with MITOS2 results
     })
 
   return({
@@ -125,7 +126,7 @@ annotate_trnaScan <- function(
 .trnA_key <- list(
   Phe = "trnF",
   Val = "trnV",
-  Leu = "trnL",
+  Leu = "trnL1",
   Ile = "trnI",
   Gln = "trnQ",
   Met = "trnM",
@@ -134,7 +135,7 @@ annotate_trnaScan <- function(
   Asn = "trnN",
   Cys = "trnC",
   Tyr = "trnY",
-  Ser = "trnS",
+  Ser = "trnS1",
   Asp = "trnD",
   Lys = "trnK",
   Gly = "trnG",

@@ -88,11 +88,13 @@ annotate <- function(
 
   # Combine annotations ----
   # If there are overlapping tRNA annotations, only keep the annotation from trnascan
-  annotations_mitos <- annotations_mitos[!(annotations_mitos$gene %in% annotations_trnaScan$gene),]
+  annotations_mitos <- annotations_mitos[!(annotations_mitos$tRNA_ID %in% annotations_trnaScan$tRNA_ID),]
   annotations <- dplyr::bind_rows(
     annotations_trnaScan,
     annotations_mitos
-  ) |>
+  ) |> dplyr::select(-dplyr::any_of('tRNA_ID')) |> # remove temporary tRNA_ID column
+    dplyr::mutate(across('gene', str_replace, 'trnS1|tnrS2', 'trnS')) |> # Rename trnS1 and trnS2 to trnS
+    dplyr::mutate(across('gene', str_replace, 'trnL1|trnL2', 'trnL')) |> # Rename trnL1 and trnL2 to trnL
     dplyr::arrange(contig, pos1)
 
 
