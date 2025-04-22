@@ -126,7 +126,7 @@ annotate_trnaScan <- function(
 .trnA_key <- list(
   Phe = "trnF",
   Val = "trnV",
-  Leu = "trnL1",
+  Leu = "trnL",
   Ile = "trnI",
   Gln = "trnQ",
   Met = "trnM",
@@ -135,7 +135,7 @@ annotate_trnaScan <- function(
   Asn = "trnN",
   Cys = "trnC",
   Tyr = "trnY",
-  Ser = "trnS1",
+  Ser = "trnS",
   Asp = "trnD",
   Lys = "trnK",
   Gly = "trnG",
