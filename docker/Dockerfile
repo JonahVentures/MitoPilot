@@ -29,7 +29,7 @@ RUN ls
 
 # Install MitoPilot
 COPY /MitoPilot_*.tar.gz /pkg.tar.gz
-RUN R -e 'remotes::install_local("pkg.tar.gz",upgrade="never")'
+RUN R -e 'remotes::install_local("/pkg.tar.gz",upgrade="never")'
 RUN rm /pkg.tar.gz
 
 # Default Reference DBs
