@@ -1,5 +1,8 @@
 FROM condaforge/mambaforge:24.9.2-0
 
+# Passed from Github Actions
+ARG GIT_VERSION_TAG=unspecified
+
 RUN apt-get update && \
     apt-get install -y jq && \
     apt-get install -y parallel && \
@@ -25,7 +28,7 @@ COPY renv.lock renv.lock
 RUN R -e 'renv::restore()'
 
 # Install MitoPilot
-COPY docker/MitoPilot_*.tar.gz /pkg.tar.gz
+COPY docker/MitoPilot_${GIT_VERSION_TAG}.tar.gz /pkg.tar.gz
 RUN R -e 'remotes::install_local("/pkg.tar.gz",upgrade="never")'
 RUN rm /pkg.tar.gz
 
