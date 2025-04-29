@@ -41,7 +41,7 @@ new_project <- function(
     min_depth = 2000000,
     genetic_code = 2,
     executor = c("local", "awsbatch", "NMNH_Hydra", "NOAA_SEDNA"),
-    container = "macguigand/mitopilot",
+    container = paste0("macguigand/mitopilot:", utils::packageVersion("MitoPilot")),
     custom_seeds_db = NULL,
     custom_labels_db = NULL,
     config = NULL,

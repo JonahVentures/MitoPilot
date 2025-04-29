@@ -61,7 +61,6 @@ ex = "NMNH_Hydra"
 MitoPilot::new_test_project(
     path = wd,
     executor = ex,
-    container = "macguigand/mitopilot",
     full_size = FALSE,
     Rproj = FALSE
 )

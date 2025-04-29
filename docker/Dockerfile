@@ -1,5 +1,8 @@
 FROM condaforge/mambaforge:24.9.2-0
 
+# Passed from Github Actions
+ARG GIT_VERSION_TAG=unspecified
+
 RUN apt-get update && \
     apt-get install -y jq && \
     apt-get install -y parallel && \

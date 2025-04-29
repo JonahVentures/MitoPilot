@@ -28,7 +28,7 @@ new_test_project <- function(
     n = Inf,
     full_size = FALSE,
     executor = "local",
-    container = "macguigand/mitopilot",
+    container = paste0("macguigand/mitopilot:", utils::packageVersion("MitoPilot")),
     Rproj = TRUE,
     force = FALSE,
     ...) {
