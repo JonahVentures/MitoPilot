@@ -27,6 +27,9 @@ RUN R -e "remotes::install_github('rstudio/renv')"
 COPY renv.lock renv.lock
 RUN R -e 'renv::restore()'
 
+# debugging
+RUN ls
+
 # Install MitoPilot
 COPY docker/MitoPilot_*.tar.gz /pkg.tar.gz
 RUN R -e 'remotes::install_local("/pkg.tar.gz",upgrade="never")'
