@@ -6,6 +6,7 @@ ARG GIT_VERSION_TAG=unspecified
 RUN apt-get update && \
     apt-get install -y jq && \
     apt-get install -y parallel && \
+    apt-get install default-jre && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Conda packages

@@ -1,8 +1,9 @@
-include {assemble} from './assemble.nf'
+// WORK IN PROGRESS
+
+include {assemble_MF} from './assemble_MitoFinder.nf'
 
 params.sqlRead =  'SELECT a.ID, a.assemble_opts, opts.cpus, opts.memory, ' +
-                  'opts.seeds_db, opts.labels_db, opts.getOrganelle, opts.assembler ' + 
-                  'opts.mf_db, opts.mitofinder, s.genetic_code' +
+                  'opts.mf_db, opts.mitofinder, s.genetic_code ' +
                   'FROM assemble a ' +
                   'JOIN assemble_opts opts ' +
                   'ON a.assemble_opts = opts.assemble_opts ' +
@@ -21,7 +22,7 @@ params.sqlWriteAssemble =   'UPDATE assemble SET paths=?, scaffolds=?, length=?,
 
 
 
-workflow ASSEMBLE {
+workflow ASSEMBLE_MF {
     take:
         input
 
@@ -35,16 +36,10 @@ workflow ASSEMBLE {
                     [                                                           //## assembly options ##//
                         cpus: it[2],                                            // cpus
                         memory: it[3],                                          // memory
-                        getOrganelle: it[6]                                     // getOrganelle options
-                        mitofinder: it[9]                                        // mitofinder options
+                        mitofinder: it[5]                                     // mitofinder options
                     ],
-                    [
-                        it[4],                                        // getOrganelle seeds_db
-                        it[5],                                        // getOrganelle labels_db      
-                    ]
-                    it[8],                                          // mitofinder .gb reference database 
-                    it[10],                                         // genetic code       
-                    it[7]                                           // assembler        
+                    it[4],                                          // mitofinder .gb reference database 
+                    it[6]                                           // genetic code
                 )
             }
             .set { assemble_opts }
@@ -67,15 +62,14 @@ workflow ASSEMBLE {
                     it[1][1],                                                   // assembly options id
                     it[0][1],                                                   // trimmed reads in
                     it[1][2],                                                   // assembly options
-                    it[1][3]                                                    // getOrganelle databases (seeds_db and labels_db)
-                    it[1][4]                                                    // getOrganelle databases (seeds_db and labels_db)
-                    it[1][5]                                                    // getOrganelle databases (seeds_db and labels_db)
+                    it[1][3],                                                   // mitofinder .gb reference database 
+                    it[1][4]                                                    // genetic code
                 )
             }
             .set { assemble_in }
 
         // Assemble
-        assemble(assemble_in).set { assemble_out }
+        assemble_MF(assemble_in).set { assemble_out }
 
         // Clear old assemblies from db
         assemble_out[0]

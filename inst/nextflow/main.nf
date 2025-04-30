@@ -10,6 +10,7 @@ params.ts = workflow.start.toInstant().getEpochSecond().toString()
 // Modules
 include {PREPROCESS} from './modules/preprocess_workflow.nf'
 include {ASSEMBLE} from './modules/assemble_workflow.nf'
+include {ASSEMBLE_MF} from './modules/assemble_MitoFinder_workflow.nf'
 include {COVERAGE} from './modules/coverage_workflow.nf'
 include {ANNOTATE} from './modules/annotate_workflow.nf'
 include {CURATE} from './modules/curate_workflow.nf'

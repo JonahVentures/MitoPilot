@@ -166,6 +166,23 @@ assemble_opts_modal <- function(rv = NULL, session = getDefaultReactiveDomain())
         style = "display: flex; flex-flow: row nowrap; align-items: center; gap: 2em;",
         div(
           style = "flex: 1",
+          selectizeInput(
+            ns("assembler"),
+            label = "Assembler:",
+            choices = c("GetOrganelle", "MitoFinder"),
+            selected = current$assembler %||% character(0),
+            width = "100%",
+            options = list(
+              create = TRUE,
+              maxItems = 1
+            )
+          ) |> shinyjs::disabled()
+        )
+      ),
+      div(
+        style = "display: flex; flex-flow: row nowrap; align-items: center; gap: 2em;",
+        div(
+          style = "flex: 1",
           numericInput(
             ns("assemble_opts_cpus"), "CPUs:",
             width = "100%",
@@ -181,6 +198,18 @@ assemble_opts_modal <- function(rv = NULL, session = getDefaultReactiveDomain())
           ) |> shinyjs::disabled()
         )
       ),
+      textInput(
+        ns("mitofinder"),
+        label = "MitoFinder options",
+        value = current$mitofinder %||% character(0),
+        width = "100%"
+      ) |> shinyjs::disabled(),
+      textInput(
+        ns("mf_db"),
+        label = "MitoFinder Database:",
+        value = current$mitofinder_db %||% character(0),
+        width = "100%"
+      ) |> shinyjs::disabled(),
       textInput(
         ns("getOrganelle"),
         label = "getOrganelle options",
@@ -206,6 +235,15 @@ assemble_opts_modal <- function(rv = NULL, session = getDefaultReactiveDomain())
       )
     )
   )
+
+  if(current$assembler == "GetOrganelle"){
+    shinyjs::hide(id = "mitofinder")
+    shinyjs::hide(id = "mf_db")
+  } else if(current$assembler == "MitoFinder"){
+    shinyjs::hide(id = "getOrganelle")
+    shinyjs::hide(id = "seeds_db")
+    shinyjs::hide(id = "labels_db")
+  }
 }
 
 #' Get assembly from database
