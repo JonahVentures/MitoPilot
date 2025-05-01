@@ -23,6 +23,9 @@
 #' @param curate_target Default target database for curation
 #' @param max_blast_hits Maximum number of top BLAST hits to retain (default = 100)
 #' @param curate_params Default curation parameters
+#' @param assembler Assembler, choice of "GetOrgnalle" (default) or "MitoFinder"
+#' @param mitofinder_db MitoFinder reference db, must be GenBank format (.gb)
+#' @param mitofinder Default MitoFinder command line options
 #'
 #' @export
 #'
@@ -45,7 +48,7 @@ new_db <- function(
       "--expected-max-size 20000",
       "--target-genome-size 16500"
     ),
-    mitofinder_db = "fish.gb",
+    mitofinder_db = "/scratch/nmnh_ocean_dna/Mitofinder_refDBs/Actinopterygii/2025_04_30/refs_final/Actinopterygii_RefSeqMitos.gb",
     mitofinder = paste(
       "--megahit"
     ),

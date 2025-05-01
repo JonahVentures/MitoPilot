@@ -12,7 +12,7 @@ new_project(
   min_depth = 2e+06,
   genetic_code = 2,
   executor = c("local", "awsbatch", "NMNH_Hydra", "NOAA_SEDNA"),
-  container = paste0("macguigand/mitopilot:", packageVersion("MitoPilot")),
+  container = paste0("macguigand/mitopilot:", utils::packageVersion("MitoPilot")),
   custom_seeds_db = NULL,
   custom_labels_db = NULL,
   config = NULL,

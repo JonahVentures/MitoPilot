@@ -12,12 +12,16 @@ new_db(
   genetic_code = 2,
   assemble_cpus = 6,
   assemble_memory = 24,
+  assembler = "GetOrganelle",
   seeds_db =
     "https://raw.githubusercontent.com/smithsonian/MitoPilot/main/ref_dbs/getOrganelle/seeds/fish_mito_seeds.fasta",
   labels_db =
     "https://raw.githubusercontent.com/smithsonian/MitoPilot/main/ref_dbs/getOrganelle/labels/fish_mito_labels.fasta",
   getOrganelle = paste("-F 'anonym'", "-R 10 -k '21,45,65,85,105,115'",
     "--larger-auto-ws", "--expected-max-size 20000", "--target-genome-size 16500"),
+  mitofinder_db =
+    "/scratch/nmnh_ocean_dna/Mitofinder_refDBs/Actinopterygii/2025_04_30/refs_final/Actinopterygii_RefSeqMitos.gb",
+  mitofinder = paste("--megahit"),
   annotate_cpus = 6,
   annotate_memory = 36,
   annotate_ref_db = "Chordata",
@@ -48,11 +52,17 @@ for more info https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi}
 
 \item{assemble_memory}{default memory (GB) for assembly}
 
+\item{assembler}{Assembler, choice of "GetOrgnalle" (default) or "MitoFinder"}
+
 \item{seeds_db}{Path to the gotOrganelle seeds database, can be a URL, cannot have same file name as labels_db}
 
 \item{labels_db}{Path to the gotOrganelle labels database, can be a URL, cannot have same file name as seeds_db}
 
 \item{getOrganelle}{Default getOrganelle command line options}
+
+\item{mitofinder_db}{MitoFinder reference db, must be GenBank format (.gb)}
+
+\item{mitofinder}{Default MitoFinder command line options}
 
 \item{annotate_cpus}{Default # cpus for annotation}
 
