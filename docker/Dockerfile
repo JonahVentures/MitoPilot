@@ -3,10 +3,13 @@ FROM condaforge/mambaforge:24.9.2-0
 # Passed from Github Actions
 ARG GIT_VERSION_TAG=unspecified
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && \
     apt-get install -y jq && \
     apt-get install -y parallel && \
-    apt-get install default-jre && \
+    apt-get install -y default-jre && \
+    apt-get install -y python2.7 && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Conda packages
@@ -22,14 +25,17 @@ RUN conda config --set channel_priority true && \
     mamba install -c bioconda trnascan-se=2.0.12 -m -n trnascan-se && \
     mamba install -c bioconda mitos=2.1.9 -m -n mitos && \
     mamba install -c conda-forge r-base=4.4.2 && \
+#    mamba install -c conda-forge python=2.7 -m -n mitofinder && \
     mamba install r-remotes
+
+# install MitoFinder
+RUN git clone https://github.com/RemiAllio/MitoFinder.git /opt/MitoFinder
+RUN cd /opt/MitoFinder;./install;cd ~
+ENV PATH="/opt/MitoFinder:${PATH}"
 
 RUN R -e "remotes::install_github('rstudio/renv')"
 COPY renv.lock renv.lock
 RUN R -e 'renv::restore()'
-
-# debugging
-RUN ls
 
 # Install MitoPilot
 COPY docker/MitoPilot_*.tar.gz /pkg.tar.gz
