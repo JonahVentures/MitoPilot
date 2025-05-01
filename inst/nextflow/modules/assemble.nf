@@ -95,11 +95,10 @@ process assemble {
             parallel -j !{task.cpus} 'awk -v topo=$topology "/^>/ {print \\">!{id}.{#}.\\" ++count[\\">\\"] \\" \\" topo} !/^>/ {print}" {} > !{outDir}/!{id}_assembly_{#}.fasta' ::: "${files[@]}"
         fi
     elif [ !{opts.assembler} == "MitoFinder" ]; then      
-        # get MitoFinder Singularity container
         cd !{workingDir}
-        singularity pull --arch amd64 library://remiallio/default/mitofinder:v1.4.2 
+        mamba activate mitofinder
         # run MitoFinder
-        singularity run mitofinder_v1.4.2.sif \
+        mitofinder \
             --megahit \
             -j !{id} \
             -1 !{reads[0]} \
@@ -108,9 +107,7 @@ process assemble {
             -o [genetic_code] \
             -p !{task.cpus} \
             -m !{task.memory} 
-
-        # remove Singularity container 
-        rm mitofinder_v1.4.2.sif
+        mamba deactivate
         cd ../..
         mkdir -p !{outDir}
         ### LOGS ####
