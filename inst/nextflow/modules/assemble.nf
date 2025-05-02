@@ -15,7 +15,7 @@ process assemble {
     tag "${id}"
 
     input:
-    tuple val(id), val(opts_id), path(reads), val(opts), path(dbs)
+    tuple val(id), val(opts_id), path(reads), val(opts), path(dbs), path(mf_db), value(genetic_code), value(assembler)
 
     output:
     tuple val("${id}"),
@@ -99,12 +99,12 @@ process assemble {
         mamba activate mitofinder
         # run MitoFinder
         mitofinder \
-            --megahit \
+            !{opts.mitofinder} \
             -j !{id} \
             -1 !{reads[0]} \
             -2 !{reads[1]} \
-            -r [genbank_reference.gb] \
-            -o [genetic_code] \
+            -r !{mf_db} \
+            -o !{genetic_code} \
             -p !{task.cpus} \
             -m !{task.memory} 
         mamba deactivate
