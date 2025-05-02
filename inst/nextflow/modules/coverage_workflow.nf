@@ -3,8 +3,6 @@ include {coverage} from './coverage.nf'
 params.sqlWrite =   'UPDATE assemblies SET depth = ?, gc = ?, errors = ?, time_stamp = ? ' +
                     'WHERE ID=? and path=? and scaffold=?'
 
-
-
 workflow COVERAGE {
     take:
         input
@@ -18,7 +16,8 @@ workflow COVERAGE {
                     it[0],                                          // ID
                     it[4],                                          // assemble opt_id
                     it[2],                                          // reads
-                    (it[1] instanceof List) ? it[1] : [it[1]]       // assembly
+                    (it[1] instanceof List) ? it[1] : [it[1]],       // assembly
+                    it[7]                                             // assembler
                 )                      
             }
             .transpose( by: 3 )                                     // transpose by assembly (process each assembly separately)                                       
