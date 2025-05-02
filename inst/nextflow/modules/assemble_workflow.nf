@@ -2,7 +2,7 @@ include {assemble} from './assemble.nf'
 
 params.sqlRead =  'SELECT a.ID, a.assemble_opts, opts.cpus, opts.memory, ' +
                   'opts.seeds_db, opts.labels_db, opts.getOrganelle, opts.assembler, ' + 
-                  'opts.mf_db, opts.mitofinder, s.genetic_code ' +
+                  'opts.mitofinder_db, opts.mitofinder, s.genetic_code ' +
                   'FROM assemble a ' +
                   'JOIN assemble_opts opts ' +
                   'ON a.assemble_opts = opts.assemble_opts ' +

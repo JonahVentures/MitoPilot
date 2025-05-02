@@ -15,7 +15,7 @@ process assemble {
     tag "${id}"
 
     input:
-    tuple val(id), val(opts_id), path(reads), val(opts), path(dbs), path(mf_db), value(genetic_code), value(assembler)
+    tuple val(id), val(opts_id), path(reads), val(opts), path(dbs), path(mf_db), val(genetic_code)
 
     output:
     tuple val("${id}"),
@@ -65,6 +65,7 @@ process assemble {
     }
 */
     '''
+    mkdir -p !{workingDir}
     if [ !{opts.assembler} == "GetOrganelle" ]; then
         mkdir -p !{workingDir}
         get_organelle_from_reads.py \
@@ -96,7 +97,6 @@ process assemble {
         fi
     elif [ !{opts.assembler} == "MitoFinder" ]; then      
         cd !{workingDir}
-        mamba activate mitofinder
         # run MitoFinder
         mitofinder \
             !{opts.mitofinder} \
@@ -104,10 +104,9 @@ process assemble {
             -1 !{reads[0]} \
             -2 !{reads[1]} \
             -r !{mf_db} \
-            -o !{genetic_code} \
+            -o !{genetic_code.intValue()} \
             -p !{task.cpus} \
-            -m !{task.memory} 
-        mamba deactivate
+            -m !{task.memory.toGiga()} 
         cd ../..
         mkdir -p !{outDir}
         ### LOGS ####
@@ -132,7 +131,7 @@ process assemble {
         if [ ${#files[@]} -eq 0 ]; then
             echo ">No assembly found" > !{outDir}/!{id}_assembly_0.fasta
         else
-            parallel -j !{task.cpus} 'awk -v topo=$topology "/^>/ {print \\">!{id}.{#}.\\" ++count[\\">\\"] \\" \\" topo} !/^>/ {print}" {} > !{outDir}/!{id}_assembly_{#}.fasta' ::: "${files[@]}"
+            parallel -j !{task.cpus} 'awk -v topo=$topology "/^>/ {print \\s">!{id}.{#}.\\" ++count[\\">\\"] \\" \\" topo} !/^>/ {print}" {} > !{outDir}/!{id}_assembly_{#}.fasta' ::: "${files[@]}"
         fi
     fi
 
