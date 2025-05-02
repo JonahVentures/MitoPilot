@@ -100,6 +100,7 @@ process assemble {
         # run MitoFinder
         mitofinder \
             !{opts.mitofinder} \
+            --ignore \
             -j !{id} \
             -1 ../../!{reads[0]} \
             -2 ../../!{reads[1]} \
@@ -117,21 +118,21 @@ process assemble {
         #summary_get_organelle_output.py !{workingDir} -o !{outDir}/!{id}_summary.txt
         touch !{outDir}/!{id}_summary.txt # temporary placeholder summary file
 
+        ### ARCHIVE READS ###
+        tar -czvf !{outDir}/!{id}_reads.tar.gz *.fastq.gz
+
         ### work dir info for troubleshooting ####
         echo "Nextflow assemble working directory:" > !{outDir}/NF_work_dir_assemble.txt
         echo "$PWD" >> !{outDir}/NF_work_dir_assemble.txt
         
-        ### ARCHIVE READS ###
-        tar -czvf !{outDir}/!{id}_reads.tar.gz !{workingDir}/extended*.fq
-        
         ### FORMAT ASSEMBLIES ###
-        export topology==$(awk '/Circularization:/ {print ($2 == "Yes" ? "circular" : "linear")}' !{workingDir}/!{id}/*_Final_Results/!{id}.infos)   
+        export topology=$(awk '/Circularization:/ {print ($2 == "Yes" ? "circular" : "linear")}' !{workingDir}/!{id}/*_Final_Results/!{id}.infos)   
         shopt -s nullglob
         files=(!{workingDir}/!{id}/*_Final_Results/*_mtDNA_contig.fasta)
         if [ ${#files[@]} -eq 0 ]; then
             echo ">No assembly found" > !{outDir}/!{id}_assembly_0.fasta
         else
-            parallel -j !{task.cpus} 'awk -v topo=$topology "/^>/ {print \\s">!{id}.{#}.\\" ++count[\\">\\"] \\" \\" topo} !/^>/ {print}" {} > !{outDir}/!{id}_assembly_{#}.fasta' ::: "${files[@]}"
+            parallel -j !{task.cpus} 'awk -v topo=$topology "/^>/ {print \\">!{id}.{#}.\\" ++count[\\">\\"] \\" \\" topo} !/^>/ {print}" {} > !{outDir}/!{id}_assembly_{#}.fasta' ::: "${files[@]}"
         fi
     fi
 

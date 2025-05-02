@@ -484,6 +484,35 @@ assemble_server <- function(id) {
           inputId = "labels_db",
           value = cur$labels_db
         )
+        updateTextAreaInput(
+          inputId = "mf_db",
+          value = cur$labels_db
+        )
+        updateTextAreaInput(
+          inputId = "mf_db",
+          value = cur$mitofinder_db
+        )
+        updateTextAreaInput(
+          inputId = "mitofinder",
+          value = cur$mitofinder
+        )
+        updateSelectizeInput(
+          inputId = "assembler",
+          selected = cur$assembler
+        )
+        if(cur$assembler == "GetOrganelle"){
+          shinyjs::hide(id = "mitofinder")
+          shinyjs::hide(id = "mf_db")
+          shinyjs::show(id = "getOrganelle")
+          shinyjs::show(id = "seeds_db")
+          shinyjs::show(id = "labels_db")
+        } else if(cur$assembler == "MitoFinder"){
+          shinyjs::show(id = "mitofinder")
+          shinyjs::show(id = "mf_db")
+          shinyjs::hide(id = "getOrganelle")
+          shinyjs::hide(id = "seeds_db")
+          shinyjs::hide(id = "labels_db")
+        }
       }
     })
     observeEvent(input$edit_assemble_opts, ignoreInit = T, {
