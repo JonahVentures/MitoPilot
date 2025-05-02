@@ -44,6 +44,8 @@ RUN git clone https://github.com/RemiAllio/MitoFinder.git /opt/MitoFinder
 RUN cd /opt/MitoFinder;./install.sh;cd ~
 ENV PATH="/opt/MitoFinder:${PATH}"
 
+RUN ln -s /usr/lib/x86_64-linux-gnu/libidn2.so.0 /usr/lib/x86_64-linux-gnu/libidn.so.11
+
 # Default Reference DBs
 #COPY ref_dbs/getOrganelle /ref_dbs/getOrganelle
 COPY ref_dbs/Mitos2 /ref_dbs/Mitos2
