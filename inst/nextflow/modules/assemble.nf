@@ -101,9 +101,9 @@ process assemble {
         mitofinder \
             !{opts.mitofinder} \
             -j !{id} \
-            -1 !{reads[0]} \
-            -2 !{reads[1]} \
-            -r !{mf_db} \
+            -1 ../../!{reads[0]} \
+            -2 ../../!{reads[1]} \
+            -r ../../!{mf_db} \
             -o !{genetic_code.intValue()} \
             -p !{task.cpus} \
             -m !{task.memory.toGiga()} 
