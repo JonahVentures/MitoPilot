@@ -48,7 +48,7 @@ new_db <- function(
       "--expected-max-size 20000",
       "--target-genome-size 16500"
     ),
-    mitofinder_db = "/scratch/nmnh_ocean_dna/Mitofinder_refDBs/Actinopterygii/2025_04_30/refs_final/Actinopterygii_RefSeqMitos.gb",
+    mitofinder_db = "https://raw.githubusercontent.com/Smithsonian/MitoPilot/refs/heads/devel-DJM/ref_dbs/MitoFinder/NC_002333_Danio_rerio.gb",
     mitofinder = paste(
       "--megahit"
     ),
