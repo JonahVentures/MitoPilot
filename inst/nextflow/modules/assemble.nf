@@ -24,46 +24,13 @@ process assemble {
         path("${id}/assemble/${opts_id}/${id}_summary.txt"),                  // getOrganelle summary
         val("${opts_id}"),                                                    // options id
         path("${id}/assemble/${opts_id}/assembler.log.txt"),                     // getOrganelle log
-        path("${id}/assemble/${opts_id}/NF_work_dir_assemble.txt")                     // Nextflow working directory, for troubleshooting
+        path("${id}/assemble/${opts_id}/NF_work_dir_assemble.txt"),                     // Nextflow working directory, for troubleshooting
+        val("${opts.assembler}")                                                         // assembler
 
     shell:
     workingDir = "${id}/assemble"
     outDir = "${workingDir}/${opts_id}"
 
-// old code for binding paths, doesn't work, may want to revisit later
-/*
-    seeds = "${opts.seeds_db}"
-    labels = "${opts.labels_db}"
-    // check if Singularity is being used
-    // if so, may need to set special bind paths for custom GetOrganelle databases
-    if (workflow.containerEngine == 'singularity') {
-        // get base paths for databases
-        seeds_path = java.nio.file.Paths.get(seeds).parent.toString()
-        labels_path = java.nio.file.Paths.get(labels).parent.toString()
-        // println "seed path = ${seeds_path}"
-        // println "labels path = ${labels_path}"
-        // check if using the default databases, only update bind paths if needed
-        if (seeds_path != "/ref_dbs/getOrganelle/seeds" || labels_path != "/ref_dbs/getOrganelle/seeds") {
-            bindPathsList = []
-            if (seeds_path != "/ref_dbs/getOrganelle/seeds"){
-                bindPathsList << seeds_path
-            }
-            if (labels_path != "/ref_dbs/getOrganelle/seeds"){
-                bindPathsList << labels_path
-            }
-            // Combine the paths into a comma-separated string
-            dynamicBindPaths = bindPathsList.join(',')
-            // Print the bind paths for debugging
-            println "Singularity bind paths set to: $dynamicBindPaths"
-            // set bind paths
-            containerOptions "--bind $dynamicBindPaths"
-        } else {
-            println "Using default databases, no custom bind paths are needed"
-        }
-    } else {
-        println "Singularity is NOT enabled"
-    }
-*/
     '''
     mkdir -p !{workingDir}
     if [ !{opts.assembler} == "GetOrganelle" ]; then
@@ -100,10 +67,11 @@ process assemble {
         # run MitoFinder
         mitofinder \
             !{opts.mitofinder} \
+            --ignore \
             -j !{id} \
-            -1 !{reads[0]} \
-            -2 !{reads[1]} \
-            -r !{mf_db} \
+            -1 ../../!{reads[0]} \
+            -2 ../../!{reads[1]} \
+            -r ../../!{mf_db} \
             -o !{genetic_code.intValue()} \
             -p !{task.cpus} \
             -m !{task.memory.toGiga()} 
@@ -117,21 +85,21 @@ process assemble {
         #summary_get_organelle_output.py !{workingDir} -o !{outDir}/!{id}_summary.txt
         touch !{outDir}/!{id}_summary.txt # temporary placeholder summary file
 
+        ### ARCHIVE READS ###
+        tar -czvf !{outDir}/!{id}_reads.tar.gz *.fastq.gz
+
         ### work dir info for troubleshooting ####
         echo "Nextflow assemble working directory:" > !{outDir}/NF_work_dir_assemble.txt
         echo "$PWD" >> !{outDir}/NF_work_dir_assemble.txt
         
-        ### ARCHIVE READS ###
-        tar -czvf !{outDir}/!{id}_reads.tar.gz !{workingDir}/extended*.fq
-        
         ### FORMAT ASSEMBLIES ###
-        export topology==$(awk '/Circularization:/ {print ($2 == "Yes" ? "circular" : "linear")}' !{workingDir}/!{id}/*_Final_Results/!{id}.infos)   
+        export topology=$(awk '/Circularization:/ {print ($2 == "Yes" ? "circular" : "linear")}' !{workingDir}/!{id}/*_Final_Results/!{id}.infos)   
         shopt -s nullglob
         files=(!{workingDir}/!{id}/*_Final_Results/*_mtDNA_contig.fasta)
         if [ ${#files[@]} -eq 0 ]; then
             echo ">No assembly found" > !{outDir}/!{id}_assembly_0.fasta
         else
-            parallel -j !{task.cpus} 'awk -v topo=$topology "/^>/ {print \\s">!{id}.{#}.\\" ++count[\\">\\"] \\" \\" topo} !/^>/ {print}" {} > !{outDir}/!{id}_assembly_{#}.fasta' ::: "${files[@]}"
+            parallel -j !{task.cpus} 'awk -v topo=$topology "/^>/ {print \\">!{id}.{#}.\\" ++count[\\">\\"] \\" \\" topo} !/^>/ {print}" {} > !{outDir}/!{id}_assembly_{#}.fasta' ::: "${files[@]}"
         fi
     fi
 
