@@ -268,14 +268,17 @@ GetOrganelle label database in a similar manner.</p>
 documentation</a> has instructions on how to build a reference
 database.</p>
 <p>Simply put, all you need is a GenBank formatted file
-(<code>.gb</code>) containing annotated mitogenomes for decently close
-relatives. This file can be downloaded from a GenBank query in a web
-browser.</p>
+(<code>.gb</code>) containing annotated mitogenomes. This file can be
+downloaded from a GenBank query in a web browser.</p>
 <p>You can provide the path to your MitoFinder database with the
 <code>mitofinder_db</code> argument of
 <code><a href="../reference/new_project.html">MitoPilot::new_project</a></code> function when initializing a
 project. Alternatively, you can specify the MitoFinder database in the
 assembly options section of the MitoPilot GUI.</p>
+<p>Assembly of contigs with MitoFinder is completely de novo. The
+MitoFinder reference database is only used to “label” putative
+mitochondrial contigs. Thus, the species in your reference database can
+be fairly distant relatives of your samples.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
