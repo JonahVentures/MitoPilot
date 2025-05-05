@@ -20,7 +20,7 @@ new_db(
   getOrganelle = paste("-F 'anonym'", "-R 10 -k '21,45,65,85,105,115'",
     "--larger-auto-ws", "--expected-max-size 20000", "--target-genome-size 16500"),
   mitofinder_db =
-    "/scratch/nmnh_ocean_dna/Mitofinder_refDBs/Actinopterygii/2025_04_30/refs_final/Actinopterygii_RefSeqMitos.gb",
+    "https://raw.githubusercontent.com/Smithsonian/MitoPilot/refs/heads/devel-DJM/ref_dbs/MitoFinder/NC_002333_Danio_rerio.gb",
   mitofinder = paste("--megahit"),
   annotate_cpus = 6,
   annotate_memory = 36,
