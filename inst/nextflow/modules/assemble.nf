@@ -72,7 +72,7 @@ process assemble {
             -r ../../!{mf_db} \
             -o !{genetic_code.intValue()} \
             -p !{opts.cpus} \
-            -m !{opts.memory.toGiga()} 
+            -m !{opts.memory} 
         cd ../..
         mkdir -p !{outDir}
         ### LOGS ####
