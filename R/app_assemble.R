@@ -484,17 +484,46 @@ assemble_server <- function(id) {
           inputId = "labels_db",
           value = cur$labels_db
         )
+        updateTextAreaInput(
+          inputId = "mf_db",
+          value = cur$labels_db
+        )
+        updateTextAreaInput(
+          inputId = "mf_db",
+          value = cur$mitofinder_db
+        )
+        updateTextAreaInput(
+          inputId = "mitofinder",
+          value = cur$mitofinder
+        )
+        updateSelectizeInput(
+          inputId = "assembler",
+          selected = cur$assembler
+        )
+        if(cur$assembler == "GetOrganelle"){
+          shinyjs::hide(id = "mitofinder")
+          shinyjs::hide(id = "mf_db")
+          shinyjs::show(id = "getOrganelle")
+          shinyjs::show(id = "seeds_db")
+          shinyjs::show(id = "labels_db")
+        } else if(cur$assembler == "MitoFinder"){
+          shinyjs::show(id = "mitofinder")
+          shinyjs::show(id = "mf_db")
+          shinyjs::hide(id = "getOrganelle")
+          shinyjs::hide(id = "seeds_db")
+          shinyjs::hide(id = "labels_db")
+        }
       }
     })
     observeEvent(input$edit_assemble_opts, ignoreInit = T, {
+      shinyjs::toggleState("assembler", condition = input$edit_assemble_opts)
       shinyjs::toggleState("assemble_opts_cpus", condition = input$edit_assemble_opts)
       shinyjs::toggleState("assemble_opts_memory", condition = input$edit_assemble_opts)
       shinyjs::toggleState("getOrganelle", condition = input$edit_assemble_opts)
-      # TODO - allow for alt seed database
-      # Need to modify nextflow to pass seeds database to worker or
-      # the specific path must exist in the workers docker container
       shinyjs::toggleState("seeds_db", condition = input$edit_assemble_opts)
       shinyjs::toggleState("labels_db", condition = input$edit_assemble_opts)
+      shinyjs::toggleState("mf_db", condition = input$edit_assemble_opts)
+      shinyjs::toggleState("mitofinder", condition = input$edit_assemble_opts)
       # Check if editing opts that apply beyond selection
       if (input$edit_assemble_opts && input$assemble_opts %in% rv$data$assemble_opts) {
         rv$updating_indirect <- rv$data |>
@@ -536,6 +565,22 @@ assemble_server <- function(id) {
         )
       }
     })
+    # toggle parameters depending on selected assembler
+    observeEvent(input$assembler, {
+      if(input$assembler == "GetOrganelle"){
+        shinyjs::hide(id = "mitofinder")
+        shinyjs::hide(id = "mf_db")
+        shinyjs::show(id = "getOrganelle")
+        shinyjs::show(id = "seeds_db")
+        shinyjs::show(id = "labels_db")
+      } else if(input$assembler == "MitoFinder"){
+        shinyjs::show(id = "mitofinder")
+        shinyjs::show(id = "mf_db")
+        shinyjs::hide(id = "getOrganelle")
+        shinyjs::hide(id = "seeds_db")
+        shinyjs::hide(id = "labels_db")
+      }
+    })
     ## Save Changes ----
     observeEvent(input$update_assemble_opts, ignoreInit = T, {
       ## Add to params table if new or editing ----
@@ -548,7 +593,10 @@ assemble_server <- function(id) {
               memory = req(input$assemble_opts_memory),
               getOrganelle = req(input$getOrganelle),
               seeds_db = req(input$seeds_db),
-              labels_db = req(input$labels_db)
+              labels_db = req(input$labels_db),
+              assembler = req(input$assembler),
+              mitofinder_db = req(input$mf_db),
+              mitofinder = req(input$mitofinder)
             ),
             in_place = TRUE,
             copy = TRUE,

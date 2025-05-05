@@ -60,66 +60,74 @@ pre_opts_modal <- function(rv = NULL, session = getDefaultReactiveDomain()) {
   current <- list()
   if (length(unique(rv$updating$pre_opts)) == 1) {
     current <- rv$pre_opts[rv$pre_opts$pre_opts == rv$updating$pre_opts[1], ]
-  }
 
-  showModal(
-    modalDialog(
-      title = stringr::str_glue("Setting Pre-processing Options for {nrow(rv$updating)} Samples"),
-      div(
-        style = "display: flex; flex-flow: row nowrap; align-items: center; gap: 2em;",
-        selectizeInput(
-          ns("pre_opts"),
-          label = "Parameter set name:",
-          choices = rv$pre_opts$pre_opts,
-          selected = current$pre_opts,
-          options = list(
-            create = TRUE,
-            maxItems = 1
+    showModal(
+      modalDialog(
+        title = stringr::str_glue("Setting Pre-processing Options for {nrow(rv$updating)} Samples"),
+        div(
+          style = "display: flex; flex-flow: row nowrap; align-items: center; gap: 2em;",
+          selectizeInput(
+            ns("pre_opts"),
+            label = "Parameter set name:",
+            choices = rv$pre_opts$pre_opts,
+            selected = current$pre_opts,
+            options = list(
+              create = TRUE,
+              maxItems = 1
+            )
+          ),
+          div(
+            class = "form-group shiny-input-container",
+            style = "margin-top: 39px;",
+            shinyWidgets::prettyCheckbox(
+              ns("edit_pre_opts"),
+              label = "Edit",
+              value = FALSE,
+              status = "primary"
+            )
           )
         ),
         div(
-          class = "form-group shiny-input-container",
-          style = "margin-top: 39px;",
-          shinyWidgets::prettyCheckbox(
-            ns("edit_pre_opts"),
-            label = "Edit",
-            value = FALSE,
-            status = "primary"
+          style = "display: flex; flex-flow: row nowrap; align-items: center; gap: 2em;",
+          div(
+            style = "flex: 1",
+            numericInput(
+              ns("pre_opts_cpus"), "CPUs:",
+              width = "100%",
+              value = current$cpus %||% numeric(0)
+            ) |> shinyjs::disabled()
+          ),
+          div(
+            style = "flex: 1",
+            numericInput(
+              ns("pre_opts_memory"), "Memory (GB):",
+              width = "100%",
+              value = current$memory %||% numeric(0)
+            ) |> shinyjs::disabled()
           )
-        )
-      ),
-      div(
-        style = "display: flex; flex-flow: row nowrap; align-items: center; gap: 2em;",
-        div(
-          style = "flex: 1",
-          numericInput(
-            ns("pre_opts_cpus"), "CPUs:",
-            width = "100%",
-            value = current$cpus %||% numeric(0)
-          ) |> shinyjs::disabled()
         ),
-        div(
-          style = "flex: 1",
-          numericInput(
-            ns("pre_opts_memory"), "Memory (GB):",
-            width = "100%",
-            value = current$memory %||% numeric(0)
-          ) |> shinyjs::disabled()
+        textInput(
+          ns("fastp"),
+          label = "fastp options",
+          value =  current$fastp %||% character(0),
+          width = "100%"
+        ) |> shinyjs::disabled(),
+        size = "m",
+        footer = tagList(
+          actionButton(ns("update_pre_opts"), "Update"),
+          modalButton("Cancel")
         )
-      ),
-      textInput(
-        ns("fastp"),
-        label = "fastp options",
-        value =  current$fastp %||% character(0),
-        width = "100%"
-      ) |> shinyjs::disabled(),
-      size = "m",
-      footer = tagList(
-        actionButton(ns("update_pre_opts"), "Update"),
-        modalButton("Cancel")
       )
     )
-  )
+
+  } else {
+    shinyWidgets::show_alert(
+      title = "Multiple preprocess parameter sets selected",
+      text = "Cannot edit different parameter sets simultaneously",
+      type = "error",
+      closeOnClickOutside = FALSE,
+    )
+  }
 }
 
 #' Update the assemble options
@@ -134,78 +142,123 @@ assemble_opts_modal <- function(rv = NULL, session = getDefaultReactiveDomain())
   current <- list()
   if (length(unique(rv$updating$assemble_opts)) == 1) {
     current <- rv$assemble_opts[rv$assemble_opts$assemble_opts == rv$updating$assemble_opts[1], ]
-  }
 
-  showModal(
-    modalDialog(
-      title = stringr::str_glue("Setting Assembly Options for {nrow(rv$updating)} Samples"),
-      div(
-        style = "display: flex; flex-flow: row nowrap; align-items: center; gap: 2em;",
-        selectizeInput(
-          ns("assemble_opts"),
-          label = "Parameter set name:",
-          choices = rv$assemble_opts$assemble_opts,
-          selected = current$assemble_opts,
-          options = list(
-            create = TRUE,
-            maxItems = 1
+    showModal(
+      modalDialog(
+        title = stringr::str_glue("Setting Assembly Options for {nrow(rv$updating)} Samples"),
+        div(
+          style = "display: flex; flex-flow: row nowrap; align-items: center; gap: 2em;",
+          selectizeInput(
+            ns("assemble_opts"),
+            label = "Parameter set name:",
+            choices = rv$assemble_opts$assemble_opts,
+            selected = current$assemble_opts,
+            options = list(
+              create = TRUE,
+              maxItems = 1
+            )
+          ),
+          div(
+            class = "form-group shiny-input-container",
+            style = "margin-top: 39px;",
+            shinyWidgets::prettyCheckbox(
+              ns("edit_assemble_opts"),
+              label = "Edit",
+              value = FALSE,
+              status = "primary"
+            )
           )
         ),
         div(
-          class = "form-group shiny-input-container",
-          style = "margin-top: 39px;",
-          shinyWidgets::prettyCheckbox(
-            ns("edit_assemble_opts"),
-            label = "Edit",
-            value = FALSE,
-            status = "primary"
+          style = "display: flex; flex-flow: row nowrap; align-items: center; gap: 2em;",
+          div(
+            style = "flex: 1",
+            selectizeInput(
+              ns("assembler"),
+              label = "Assembler:",
+              choices = c("GetOrganelle", "MitoFinder"),
+              selected = current$assembler %||% character(0),
+              width = "100%",
+              options = list(
+                create = TRUE,
+                maxItems = 1
+              )
+            ) |> shinyjs::disabled()
           )
-        )
-      ),
-      div(
-        style = "display: flex; flex-flow: row nowrap; align-items: center; gap: 2em;",
-        div(
-          style = "flex: 1",
-          numericInput(
-            ns("assemble_opts_cpus"), "CPUs:",
-            width = "100%",
-            value = current$cpus %||% numeric(0)
-          ) |> shinyjs::disabled()
         ),
         div(
-          style = "flex: 1",
-          numericInput(
-            ns("assemble_opts_memory"), "Memory (GB):",
-            width = "100%",
-            value = current$memory %||% numeric(0)
-          ) |> shinyjs::disabled()
+          style = "display: flex; flex-flow: row nowrap; align-items: center; gap: 2em;",
+          div(
+            style = "flex: 1",
+            numericInput(
+              ns("assemble_opts_cpus"), "CPUs:",
+              width = "100%",
+              value = current$cpus %||% numeric(0)
+            ) |> shinyjs::disabled()
+          ),
+          div(
+            style = "flex: 1",
+            numericInput(
+              ns("assemble_opts_memory"), "Memory (GB):",
+              width = "100%",
+              value = current$memory %||% numeric(0)
+            ) |> shinyjs::disabled()
+          )
+        ),
+        textInput(
+          ns("mitofinder"),
+          label = "MitoFinder options",
+          value = current$mitofinder %||% character(0),
+          width = "100%"
+        ) |> shinyjs::disabled(),
+        textInput(
+          ns("mf_db"),
+          label = "MitoFinder Database:",
+          value = current$mitofinder_db %||% character(0),
+          width = "100%"
+        ) |> shinyjs::disabled(),
+        textInput(
+          ns("getOrganelle"),
+          label = "getOrganelle options",
+          value = current$getOrganelle %||% character(0),
+          width = "100%"
+        ) |> shinyjs::disabled(),
+        textInput(
+          ns("seeds_db"),
+          label = "getOrganelle Seeds:",
+          value = current$seeds_db %||% character(0),
+          width = "100%"
+        ) |> shinyjs::disabled(),
+        textInput(
+          ns("labels_db"),
+          label = "getOrganelle Labels:",
+          value = current$labels_db %||% character(0),
+          width = "100%"
+        ) |> shinyjs::disabled(),
+        size = "m",
+        footer = tagList(
+          actionButton(ns("update_assemble_opts"), "Update"),
+          modalButton("Cancel")
         )
-      ),
-      textInput(
-        ns("getOrganelle"),
-        label = "getOrganelle options",
-        value = current$getOrganelle %||% character(0),
-        width = "100%"
-      ) |> shinyjs::disabled(),
-      textInput(
-        ns("seeds_db"),
-        label = "getOrganelle Seeds:",
-        value = current$seeds_db %||% character(0),
-        width = "100%"
-      ) |> shinyjs::disabled(),
-      textInput(
-        ns("labels_db"),
-        label = "getOrganelle Labels:",
-        value = current$labels_db %||% character(0),
-        width = "100%"
-      ) |> shinyjs::disabled(),
-      size = "m",
-      footer = tagList(
-        actionButton(ns("update_assemble_opts"), "Update"),
-        modalButton("Cancel")
       )
     )
-  )
+
+    if(current$assembler == "GetOrganelle"){
+      shinyjs::hide(id = "mitofinder")
+      shinyjs::hide(id = "mf_db")
+    } else if(current$assembler == "MitoFinder"){
+      shinyjs::hide(id = "getOrganelle")
+      shinyjs::hide(id = "seeds_db")
+      shinyjs::hide(id = "labels_db")
+    }
+  } else {
+    shinyWidgets::show_alert(
+      title = "Multiple assembly parameter sets selected",
+      text = "Cannot edit different parameter sets simultaneously",
+      type = "error",
+      closeOnClickOutside = FALSE,
+    )
+  }
 }
 
 #' Get assembly from database

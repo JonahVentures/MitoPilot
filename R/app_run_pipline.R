@@ -12,6 +12,7 @@ pipeline_server <- function(id) {
     on("run_modal", {
       # Generate Nextflow params ----
       nf_cmd(nextflow_cmd(session$userData$mode))
+      message(nf_cmd())
 
       # Count samples to update ----
       if (session$userData$mode == "Assemble") {
@@ -114,7 +115,8 @@ pipeline_server <- function(id) {
       if(isTRUE(input$resume)) { # if box is checked, keep "-resume" flag
         nf_cmd(nextflow_cmd(session$userData$mode))
       } else { # if box is unchecked, remove "-resume" flag
-        nf_cmd(stringr::str_remove(nextflow_cmd(session$userData$mode), pattern = "-resume"))
+        nf_cmd(stringr::str_remove(nextflow_cmd(session$userData$mode),
+                                   pattern = "-resume"))
       }
       output$nf_code_block <- shiny::renderText({
         paste(c("nextflow", nf_cmd()), collapse = " ")

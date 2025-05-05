@@ -23,6 +23,9 @@
 #' @param curate_target Default target database for curation
 #' @param max_blast_hits Maximum number of top BLAST hits to retain (default = 100)
 #' @param curate_params Default curation parameters
+#' @param assembler Assembler, choice of "GetOrgnalle" (default) or "MitoFinder"
+#' @param mitofinder_db MitoFinder reference db, must be GenBank format (.gb)
+#' @param mitofinder Default MitoFinder command line options
 #'
 #' @export
 #'
@@ -35,6 +38,7 @@ new_db <- function(
     # Default assembly options
     assemble_cpus = 6,
     assemble_memory = 24,
+    assembler = "GetOrganelle",
     seeds_db = "https://raw.githubusercontent.com/smithsonian/MitoPilot/main/ref_dbs/getOrganelle/seeds/fish_mito_seeds.fasta",
     labels_db = "https://raw.githubusercontent.com/smithsonian/MitoPilot/main/ref_dbs/getOrganelle/labels/fish_mito_labels.fasta",
     getOrganelle = paste(
@@ -43,6 +47,10 @@ new_db <- function(
       "--larger-auto-ws",
       "--expected-max-size 20000",
       "--target-genome-size 16500"
+    ),
+    mitofinder_db = "https://raw.githubusercontent.com/Smithsonian/MitoPilot/refs/heads/devel-DJM/ref_dbs/MitoFinder/NC_002333_Danio_rerio.gb",
+    mitofinder = paste(
+      "--megahit"
     ),
     # Default annotation options
     annotate_cpus = 6,
@@ -69,6 +77,11 @@ new_db <- function(
   # Validate ID col
   if (any(duplicated(mapping[[mapping_id]]))) {
     stop("Duplicate IDs found in mapping file")
+  }
+
+  # Validate assembler choice
+  if (assembler %nin% c("GetOrganelle", "MitoFinder")) {
+    stop("Assembler not supported, valid options: [GetOrganelle, MitoFinder]")
   }
 
   # Validate ID length
@@ -224,6 +237,9 @@ new_db <- function(
       getOrganelle TEXT,
       seeds_db TEXT,
       labels_db TEXT,
+      assembler TEXT,
+      mitofinder_db TEXT,
+      mitofinder TEXT,
       PRIMARY KEY (assemble_opts)
     );"
   )
@@ -235,7 +251,10 @@ new_db <- function(
         memory = assemble_memory,
         seeds_db = seeds_db,
         labels_db = labels_db,
-        getOrganelle = getOrganelle
+        assembler = assembler,
+        getOrganelle = getOrganelle,
+        mitofinder_db = mitofinder_db,
+        mitofinder = mitofinder
       ),
       in_place = TRUE,
       copy = TRUE,

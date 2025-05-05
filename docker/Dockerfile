@@ -3,9 +3,13 @@ FROM condaforge/mambaforge:24.9.2-0
 # Passed from Github Actions
 ARG GIT_VERSION_TAG=unspecified
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && \
     apt-get install -y jq && \
     apt-get install -y parallel && \
+    apt-get install -y default-jre && \
+    apt-get install -y python2.7 && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Conda packages
@@ -27,13 +31,21 @@ RUN R -e "remotes::install_github('rstudio/renv')"
 COPY renv.lock renv.lock
 RUN R -e 'renv::restore()'
 
-# debugging
-RUN ls
-
 # Install MitoPilot
 COPY docker/MitoPilot_*.tar.gz /pkg.tar.gz
 RUN R -e 'remotes::install_local("/pkg.tar.gz",upgrade="never")'
 RUN rm /pkg.tar.gz
+
+# install MitoFinder
+RUN apt-get update && \
+    apt-get install -y build-essential && \
+    apt-get install -y automake autoconf
+RUN git clone https://github.com/RemiAllio/MitoFinder.git /opt/MitoFinder
+RUN cd /opt/MitoFinder;./install.sh;cd ~ 
+RUN chmod -R 777 /opt/MitoFinder
+ENV PATH="/opt/MitoFinder:${PATH}"
+
+RUN ln -s /usr/lib/x86_64-linux-gnu/libidn2.so.0 /usr/lib/x86_64-linux-gnu/libidn.so.11
 
 # Default Reference DBs
 #COPY ref_dbs/getOrganelle /ref_dbs/getOrganelle
