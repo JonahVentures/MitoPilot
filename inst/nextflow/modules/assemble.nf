@@ -58,7 +58,7 @@ process assemble {
         if [ ${#files[@]} -eq 0 ]; then
             echo ">No assembly found" > !{outDir}/!{id}_assembly_0.fasta
         else
-            parallel -j !{task.cpus} 'awk -v topo=$topology "/^>/ {print \\">!{id}.{#}.\\" ++count[\\">\\"] \\" \\" topo} !/^>/ {print}" {} > !{outDir}/!{id}_assembly_{#}.fasta' ::: "${files[@]}"
+            parallel -j !{opts.cpus} 'awk -v topo=$topology "/^>/ {print \\">!{id}.{#}.\\" ++count[\\">\\"] \\" \\" topo} !/^>/ {print}" {} > !{outDir}/!{id}_assembly_{#}.fasta' ::: "${files[@]}"
         fi
     elif [ !{opts.assembler} == "MitoFinder" ]; then      
         cd !{workingDir}
@@ -91,13 +91,20 @@ process assemble {
         echo "$PWD" >> !{outDir}/NF_work_dir_assemble.txt
         
         ### FORMAT ASSEMBLIES ###
-        export topology=$(awk '/Circularization:/ {print ($2 == "Yes" ? "circular" : "linear")}' !{workingDir}/!{id}/*_Final_Results/!{id}.infos)   
         shopt -s nullglob
-        files=(!{workingDir}/!{id}/*_Final_Results/*_mtDNA_contig.fasta)
+        files=($(find !{workingDir}/!{id}/*_Final_Results -type f -name "*mtDNA_contig*.fasta" ! -name "*genes*"))
         if [ ${#files[@]} -eq 0 ]; then
             echo ">No assembly found" > !{outDir}/!{id}_assembly_0.fasta
+        elif [ ${#files[@]} -gt 1 ]; then 
+            export topology="linear"
+            for file in "${files[@]}"; do
+               cat "$file" >> !{outDir}/temp.fasta
+            done
+            awk -v topo="$topology" '/^>/ {print ">!{id}.1." ++count[">"] " " topo} !/^>/ {print}' !{outDir}/temp.fasta > !{outDir}/!{id}_assembly_1.fasta
+            rm !{outDir}/temp.fasta
         else
-            parallel -j !{task.cpus} 'awk -v topo=$topology "/^>/ {print \\">!{id}.{#}.\\" ++count[\\">\\"] \\" \\" topo} !/^>/ {print}" {} > !{outDir}/!{id}_assembly_{#}.fasta' ::: "${files[@]}"
+            export topology=$(awk '/Circularization:/ {print ($2 == "Yes" ? "circular" : "linear")}' !{workingDir}/!{id}/*_Final_Results/!{id}.infos)   
+            parallel -j !{opts.cpus} 'awk -v topo=$topology "/^>/ {print \\">!{id}.{#}.\\" ++count[\\">\\"] \\" \\" topo} !/^>/ {print}" {} > !{outDir}/!{id}_assembly_{#}.fasta' ::: "${files[@]}"
         fi
     fi
 
