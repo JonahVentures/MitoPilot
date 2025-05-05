@@ -9,8 +9,6 @@ process assemble {
 
     errorStrategy { task.exitStatus in 137..140 ? 'retry' : 'finish' }
     maxRetries { params.assemble.maxRetries }
-    // cpus { opts.cpus }
-    // memory { opts.memory.GB * task.attempt }
 
     tag "${id}"
 
@@ -41,7 +39,7 @@ process assemble {
             -o !{workingDir}/ --overwrite \
             -s !{dbs[0]} \
             --genes !{dbs[1]} \
-            -t !{task.cpus} \
+            -t !{opts.cpus} \
             !{opts.getOrganelle}
         mkdir -p !{outDir}
         ### LOGS ####
@@ -73,8 +71,8 @@ process assemble {
             -2 ../../!{reads[1]} \
             -r ../../!{mf_db} \
             -o !{genetic_code.intValue()} \
-            -p !{task.cpus} \
-            -m !{task.memory.toGiga()} 
+            -p !{opts.cpus} \
+            -m !{opts.memory.toGiga()} 
         cd ../..
         mkdir -p !{outDir}
         ### LOGS ####
