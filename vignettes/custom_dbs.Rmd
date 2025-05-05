@@ -175,6 +175,8 @@ You could also add unpublished individual gene sequences to a custom GetOrganell
 
 The [MitoFinder documentation](https://github.com/RemiAllio/MitoFinder?tab=readme-ov-file#how-to-get-reference-mitochondrial-genomes-from-ncbi) has instructions on how to build a reference database. 
 
-Simply put, all you need is a GenBank formatted file (`.gb`) containing annotated mitogenomes for decently close relatives. This file can be downloaded from a GenBank query in a web browser. 
+Simply put, all you need is a GenBank formatted file (`.gb`) containing annotated mitogenomes. This file can be downloaded from a GenBank query in a web browser. 
 
 You can provide the path to your MitoFinder database with the `mitofinder_db` argument of `MitoPilot::new_project` function when initializing a project. Alternatively, you can specify the MitoFinder database in the assembly options section of the MitoPilot GUI.
+
+Assembly of contigs with MitoFinder is completely de novo. The MitoFinder reference database is only used to "label" putative mitochondrial contigs. Thus, the species in your reference database can be fairly distant relatives of your samples.
