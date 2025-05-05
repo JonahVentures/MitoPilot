@@ -29,7 +29,7 @@ If you are working on any other taxonomic group, you will need to compile databa
 
 ## What parts of the MitoPilot pipeline use reference databases?
 
-- GetOrganelle (Assemble module)
+- GetOrganelle or MitoFinder (Assemble module)
 - Mitos2 (Assemble module)
 - BLAST (Assemble and Export modules)
 
@@ -170,3 +170,11 @@ cat multigene.dedup.fasta my_mitogenomes.fasta more_mitogenomes.fasta > final_se
 
 You could also add unpublished individual gene sequences to a custom GetOrganelle label database in a similar manner.
 
+
+## Build custom databases for MitoFinder
+
+The [MitoFinder documentation](https://github.com/RemiAllio/MitoFinder?tab=readme-ov-file#how-to-get-reference-mitochondrial-genomes-from-ncbi) has instructions on how to build a reference database. 
+
+Simply put, all you need is a GenBank formatted file (`.gb`) containing annotated mitogenomes for decently close relatives. This file can be downloaded from a GenBank query in a web browser. 
+
+You can provide the path to your MitoFinder database with the `mitofinder_db` argument of `MitoPilot::new_project` function when initializing a project. Alternatively, you can specify the MitoFinder database in the assembly options section of the MitoPilot GUI.
