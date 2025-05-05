@@ -41,7 +41,8 @@ RUN apt-get update && \
     apt-get install -y build-essential && \
     apt-get install -y automake autoconf
 RUN git clone https://github.com/RemiAllio/MitoFinder.git /opt/MitoFinder
-RUN cd /opt/MitoFinder;./install.sh;cd ~
+RUN cd /opt/MitoFinder;./install.sh;cd ~ 
+RUN chmod -R 777 /opt/MitoFinder
 ENV PATH="/opt/MitoFinder:${PATH}"
 
 RUN ln -s /usr/lib/x86_64-linux-gnu/libidn2.so.0 /usr/lib/x86_64-linux-gnu/libidn.so.11
