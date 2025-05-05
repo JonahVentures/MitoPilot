@@ -266,7 +266,7 @@ annotate_opts_modal <- function(rv = NULL, session = getDefaultReactiveDomain())
     )
   } else {
     shinyWidgets::show_alert(
-      title = "Multiple annotation parameter sets detected",
+      title = "Multiple annotation parameter sets selected",
       text = "Cannot edit different parameter sets simultaneously",
       type = "error",
       closeOnClickOutside = FALSE,
@@ -370,7 +370,7 @@ curate_opts_modal <- function(rv = NULL, session = getDefaultReactiveDomain()) {
     )
   } else {
     shinyWidgets::show_alert(
-      title = "Multiple curation parameter sets detected",
+      title = "Multiple curation parameter sets selected",
       text = "Cannot edit different parameter sets simultaneously",
       type = "error",
       closeOnClickOutside = FALSE,

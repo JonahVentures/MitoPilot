@@ -122,7 +122,7 @@ pre_opts_modal <- function(rv = NULL, session = getDefaultReactiveDomain()) {
 
   } else {
     shinyWidgets::show_alert(
-      title = "Multiple preprocess parameter sets detected",
+      title = "Multiple preprocess parameter sets selected",
       text = "Cannot edit different parameter sets simultaneously",
       type = "error",
       closeOnClickOutside = FALSE,
@@ -253,7 +253,7 @@ assemble_opts_modal <- function(rv = NULL, session = getDefaultReactiveDomain())
     }
   } else {
     shinyWidgets::show_alert(
-      title = "Multiple assembly parameter sets detected",
+      title = "Multiple assembly parameter sets selected",
       text = "Cannot edit different parameter sets simultaneously",
       type = "error",
       closeOnClickOutside = FALSE,
