@@ -3,6 +3,7 @@
 #' Update old project database for backwards compatibility.
 #' Adds "reviewed", "ID_verified", "genetic_code", and "problematic" columns to the annotate table,
 #' "start_gene" column to the annotate_opts table,
+#' "assembler", "mitofinder_db", and "mitofinder" columns to the assemble_opts table,
 #' and "max_blast_hits" to the curate_opts table.
 #'
 #' @param path Path to the project directory (default = current working directory)
@@ -18,11 +19,15 @@ backwards_compatibility <- function(
 
   samples_table <- DBI::dbReadTable(con, "samples") # read in annotations table
   annotate_table <- DBI::dbReadTable(con, "annotate") # read in annotations table
+  assemble_opts_table <- DBI::dbReadTable(con, "assemble_opts") # read in assemble opts table
   annotate_opts_table <- DBI::dbReadTable(con, "annotate_opts") # read in annotations opts table
   curate_opts_table <- DBI::dbReadTable(con, "curate_opts") # read in curate opts table
 
   if("start_gene" %in% names(annotate_opts_table) &&
      "max_blast_hits" %in% names(curate_opts_table) &&
+     "assembler" %in% names(assemble_opts_table) &&
+     "mitofinder_db" %in% names(assemble_opts_table) &&
+     "mitofinder" %in% names(assemble_opts_table) &&
      "problematic" %in% names(annotate_table) &&
      "genetic_code" %in% names(samples_table) &&
      "ID_verified" %in% names(annotate_table) &&
@@ -141,7 +146,7 @@ backwards_compatibility <- function(
     glue::glue_sql(
       "ALTER TABLE curate_opts
        ADD COLUMN max_blast_hits INTEGER",
-       col = col,
+      col = col,
       .con = con
     ) |> DBI::dbExecute(con, statement = _)
 
@@ -153,4 +158,70 @@ backwards_compatibility <- function(
         by = "curate_opts"
       )
   }
+
+  # if assembler column doesn't exist, add it
+  if(!("assembler" %in% names(assemble_opts_table))){
+    message("added 'assembler' column to annotate_opts table")
+    assemble_opts_table$assembler <- rep("GetOrganelle", nrow(assemble_opts_table)) # add assembler column
+    # add new columns to database
+    glue::glue_sql(
+      "ALTER TABLE assemble_opts
+       ADD COLUMN assembler TEXT",
+      col = col,
+      .con = con
+    ) |> DBI::dbExecute(con, statement = _)
+
+    dplyr::tbl(con, "assemble_opts") |> # update SQL database
+      dplyr::rows_upsert(
+        assemble_opts_table,
+        in_place = TRUE,
+        copy = TRUE,
+        by = "assemble_opts"
+      )
+  }
+
+  # if mitofinder_db column doesn't exist, add it
+  if(!("mitofinder_db" %in% names(assemble_opts_table))){
+    message("added 'mitofinder_db' column to annotate_opts table")
+    assemble_opts_table$mitofinder_db <- rep("https://raw.githubusercontent.com/Smithsonian/MitoPilot/refs/heads/devel-DJM/ref_dbs/MitoFinder/NC_002333_Danio_rerio.gb",
+                                             nrow(assemble_opts_table)) # add mitofinder_db column
+    # add new columns to database
+    glue::glue_sql(
+      "ALTER TABLE assemble_opts
+       ADD COLUMN mitofinder_db TEXT",
+      col = col,
+      .con = con
+    ) |> DBI::dbExecute(con, statement = _)
+
+    dplyr::tbl(con, "assemble_opts") |> # update SQL database
+      dplyr::rows_upsert(
+        assemble_opts_table,
+        in_place = TRUE,
+        copy = TRUE,
+        by = "assemble_opts"
+      )
+  }
+
+
+  # if mitofinder column doesn't exist, add it
+  if(!("mitofinder" %in% names(assemble_opts_table))){
+    message("added 'mitofinder' column to annotate_opts table")
+    assemble_opts_table$mitofinder <- rep("--megahit", nrow(assemble_opts_table)) # add mitofinder column
+    # add new columns to database
+    glue::glue_sql(
+      "ALTER TABLE assemble_opts
+       ADD COLUMN mitofinder TEXT",
+      col = col,
+      .con = con
+    ) |> DBI::dbExecute(con, statement = _)
+
+    dplyr::tbl(con, "assemble_opts") |> # update SQL database
+      dplyr::rows_upsert(
+        assemble_opts_table,
+        in_place = TRUE,
+        copy = TRUE,
+        by = "assemble_opts"
+      )
+  }
+
 }
