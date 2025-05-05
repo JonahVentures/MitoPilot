@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">MitoPilot</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -93,7 +93,7 @@ to compile databases of mitochondrial sequences for your clade.</p>
 <h2 id="what-parts-of-the-mitopilot-pipeline-use-reference-databases">What parts of the MitoPilot pipeline use reference databases?<a class="anchor" aria-label="anchor" href="#what-parts-of-the-mitopilot-pipeline-use-reference-databases"></a>
 </h2>
 <ul>
-<li>GetOrganelle (Assemble module)</li>
+<li>GetOrganelle or MitoFinder (Assemble module)</li>
 <li>Mitos2 (Assemble module)</li>
 <li>BLAST (Assemble and Export modules)</li>
 </ul>
@@ -261,6 +261,22 @@ command:</p>
 GetOrganelle label database in a similar manner.</p>
 </div>
 </div>
+<div class="section level2">
+<h2 id="build-custom-databases-for-mitofinder">Build custom databases for MitoFinder<a class="anchor" aria-label="anchor" href="#build-custom-databases-for-mitofinder"></a>
+</h2>
+<p>The <a href="https://github.com/RemiAllio/MitoFinder?tab=readme-ov-file#how-to-get-reference-mitochondrial-genomes-from-ncbi" class="external-link">MitoFinder
+documentation</a> has instructions on how to build a reference
+database.</p>
+<p>Simply put, all you need is a GenBank formatted file
+(<code>.gb</code>) containing annotated mitogenomes for decently close
+relatives. This file can be downloaded from a GenBank query in a web
+browser.</p>
+<p>You can provide the path to your MitoFinder database with the
+<code>mitofinder_db</code> argument of
+<code><a href="../reference/new_project.html">MitoPilot::new_project</a></code> function when initializing a
+project. Alternatively, you can specify the MitoFinder database in the
+assembly options section of the MitoPilot GUI.</p>
+</div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
@@ -268,11 +284,11 @@ GetOrganelle label database in a similar manner.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Devin Leopold.</p>
+  <p>Developed by Devin Leopold, Dan MacGuigan.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer>

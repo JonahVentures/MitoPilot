@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">MitoPilot</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,15 +50,12 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">export_files</span><span class="op">(</span></span>
 <span>  group <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  IDs <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  genetic_code <span class="op">=</span> <span class="st">"2"</span>,</span>
 <span>  fasta_header <span class="op">=</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"{ID} [organism={Taxon}] [topology={topology}] [mgcode={genetic_code}]"</span>,</span>
 <span>    <span class="st">"[location=mitochondrion] {Taxon} mitochondrion, complete genome"</span><span class="op">)</span>,</span>
 <span>  fasta_header_gene <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"{ID} [organism={Taxon}] [mgcode={genetic_code}]"</span>,</span>
 <span>    <span class="st">"[location=mitochondrion] {Taxon}"</span><span class="op">)</span>,</span>
 <span>  out_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  start_codons <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ATG"</span>, <span class="st">"GTG"</span>, <span class="st">"ATA"</span>, <span class="st">"ATT"</span>, <span class="st">"ATC"</span><span class="op">)</span>,</span>
-<span>  stop_codons <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TAA"</span>, <span class="st">"TAG"</span>, <span class="st">"AGA"</span>, <span class="st">"AGG"</span>, <span class="st">"TA"</span>, <span class="st">"T"</span><span class="op">)</span>,</span>
 <span>  generateAAalignments <span class="op">=</span> <span class="cn">T</span>,</span>
 <span>  gene_export <span class="op">=</span> <span class="cn">F</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -77,10 +74,6 @@
 the export group will be exported</p></dd>
 
 
-<dt id="arg-genetic-code">genetic_code<a class="anchor" aria-label="anchor" href="#arg-genetic-code"></a></dt>
-<dd><p>Genetic code to use for annotation (default: 2).</p></dd>
-
-
 <dt id="arg-fasta-header">fasta_header<a class="anchor" aria-label="anchor" href="#arg-fasta-header"></a></dt>
 <dd><p>Template for mitogenome fasta headers. Uses glue syntax (i.e.
 `...`) to insert values from the samples table</p></dd>
@@ -93,14 +86,6 @@ the export group will be exported</p></dd>
 
 <dt id="arg-out-dir">out_dir<a class="anchor" aria-label="anchor" href="#arg-out-dir"></a></dt>
 <dd><p>directory to save the exported files</p></dd>
-
-
-<dt id="arg-start-codons">start_codons<a class="anchor" aria-label="anchor" href="#arg-start-codons"></a></dt>
-<dd><p>NCBI recognized start codons</p></dd>
-
-
-<dt id="arg-stop-codons">stop_codons<a class="anchor" aria-label="anchor" href="#arg-stop-codons"></a></dt>
-<dd><p>NCBI recognized stop codons</p></dd>
 
 
 <dt id="arg-generateaaalignments">generateAAalignments<a class="anchor" aria-label="anchor" href="#arg-generateaaalignments"></a></dt>
@@ -119,11 +104,11 @@ the export group will be exported</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Devin Leopold.</p>
+  <p>Developed by Devin Leopold, Dan MacGuigan.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer></div>

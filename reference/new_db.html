@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">MitoPilot</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,12 +55,16 @@
 <span>  genetic_code <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  assemble_cpus <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>  assemble_memory <span class="op">=</span> <span class="fl">24</span>,</span>
+<span>  assembler <span class="op">=</span> <span class="st">"GetOrganelle"</span>,</span>
 <span>  seeds_db <span class="op">=</span></span>
 <span>    <span class="st">"https://raw.githubusercontent.com/smithsonian/MitoPilot/main/ref_dbs/getOrganelle/seeds/fish_mito_seeds.fasta"</span>,</span>
 <span>  labels_db <span class="op">=</span></span>
 <span>    <span class="st">"https://raw.githubusercontent.com/smithsonian/MitoPilot/main/ref_dbs/getOrganelle/labels/fish_mito_labels.fasta"</span>,</span>
 <span>  getOrganelle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"-F 'anonym'"</span>, <span class="st">"-R 10 -k '21,45,65,85,105,115'"</span>,</span>
 <span>    <span class="st">"--larger-auto-ws"</span>, <span class="st">"--expected-max-size 20000"</span>, <span class="st">"--target-genome-size 16500"</span><span class="op">)</span>,</span>
+<span>  mitofinder_db <span class="op">=</span></span>
+<span>    <span class="st">"https://raw.githubusercontent.com/Smithsonian/MitoPilot/refs/heads/devel-DJM/ref_dbs/MitoFinder/NC_002333_Danio_rerio.gb"</span>,</span>
+<span>  mitofinder <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"--megahit"</span><span class="op">)</span>,</span>
 <span>  annotate_cpus <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>  annotate_memory <span class="op">=</span> <span class="fl">36</span>,</span>
 <span>  annotate_ref_db <span class="op">=</span> <span class="st">"Chordata"</span>,</span>
@@ -109,6 +113,10 @@ for more info https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi</p></dd>
 <dd><p>default memory (GB) for assembly</p></dd>
 
 
+<dt id="arg-assembler">assembler<a class="anchor" aria-label="anchor" href="#arg-assembler"></a></dt>
+<dd><p>Assembler, choice of "GetOrgnalle" (default) or "MitoFinder"</p></dd>
+
+
 <dt id="arg-seeds-db">seeds_db<a class="anchor" aria-label="anchor" href="#arg-seeds-db"></a></dt>
 <dd><p>Path to the gotOrganelle seeds database, can be a URL, cannot have same file name as labels_db</p></dd>
 
@@ -119,6 +127,14 @@ for more info https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi</p></dd>
 
 <dt id="arg-getorganelle">getOrganelle<a class="anchor" aria-label="anchor" href="#arg-getorganelle"></a></dt>
 <dd><p>Default getOrganelle command line options</p></dd>
+
+
+<dt id="arg-mitofinder-db">mitofinder_db<a class="anchor" aria-label="anchor" href="#arg-mitofinder-db"></a></dt>
+<dd><p>MitoFinder reference db, must be GenBank format (.gb)</p></dd>
+
+
+<dt id="arg-mitofinder">mitofinder<a class="anchor" aria-label="anchor" href="#arg-mitofinder"></a></dt>
+<dd><p>Default MitoFinder command line options</p></dd>
 
 
 <dt id="arg-annotate-cpus">annotate_cpus<a class="anchor" aria-label="anchor" href="#arg-annotate-cpus"></a></dt>
@@ -171,11 +187,11 @@ for more info https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Devin Leopold.</p>
+  <p>Developed by Devin Leopold, Dan MacGuigan.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer></div>
