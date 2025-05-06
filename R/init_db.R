@@ -9,8 +9,10 @@
 #'   for more info https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi
 #' @param assemble_cpus Default # cpus for assembly
 #' @param assemble_memory default memory (GB) for assembly
-#' @param seeds_db Path to the gotOrganelle seeds database, can be a URL, cannot have same file name as labels_db
-#' @param labels_db Path to the gotOrganelle labels database, can be a URL, cannot have same file name as seeds_db
+#' @param seeds_db Path to the gotOrganelle seeds database, can be a URL, cannot have same file name as labels_db.
+#'   Default is a fish database built from RefSeq. https://raw.githubusercontent.com/smithsonian/MitoPilot/main/ref_dbs/getOrganelle/seeds/fish_mito_seeds.fasta
+#' @param labels_db Path to the gotOrganelle labels database, can be a URL, cannot have same file name as seeds_db.
+#'   Default is a fish database built from RefSeq. https://raw.githubusercontent.com/smithsonian/MitoPilot/main/ref_dbs/getOrganelle/seeds/fish_mito_labels.fasta
 #' @param getOrganelle Default getOrganelle command line options
 #' @param annotate_cpus Default # cpus for annotation
 #' @param annotate_memory Default memory (GB) for annotation
@@ -24,7 +26,8 @@
 #' @param max_blast_hits Maximum number of top BLAST hits to retain (default = 100)
 #' @param curate_params Default curation parameters
 #' @param assembler Assembler, choice of "GetOrgnalle" (default) or "MitoFinder"
-#' @param mitofinder_db MitoFinder reference db, must be GenBank format (.gb)
+#' @param mitofinder_db Path to MitoFinder reference db, must be GenBank format (.gb), can be a URL.
+#'   Default is the Danio rerio mitogenome (https://raw.githubusercontent.com/Smithsonian/MitoPilot/refs/heads/main/ref_dbs/MitoFinder/NC_002333_Danio_rerio.gb)
 #' @param mitofinder Default MitoFinder command line options
 #'
 #' @export
@@ -48,7 +51,7 @@ new_db <- function(
       "--expected-max-size 20000",
       "--target-genome-size 16500"
     ),
-    mitofinder_db = "https://raw.githubusercontent.com/Smithsonian/MitoPilot/refs/heads/devel-DJM/ref_dbs/MitoFinder/NC_002333_Danio_rerio.gb",
+    mitofinder_db = "https://raw.githubusercontent.com/Smithsonian/MitoPilot/refs/heads/main/ref_dbs/MitoFinder/NC_002333_Danio_rerio.gb",
     mitofinder = paste(
       "--megahit"
     ),

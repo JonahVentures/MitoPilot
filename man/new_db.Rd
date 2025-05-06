@@ -20,7 +20,7 @@ new_db(
   getOrganelle = paste("-F 'anonym'", "-R 10 -k '21,45,65,85,105,115'",
     "--larger-auto-ws", "--expected-max-size 20000", "--target-genome-size 16500"),
   mitofinder_db =
-    "https://raw.githubusercontent.com/Smithsonian/MitoPilot/refs/heads/devel-DJM/ref_dbs/MitoFinder/NC_002333_Danio_rerio.gb",
+    "https://raw.githubusercontent.com/Smithsonian/MitoPilot/refs/heads/main/ref_dbs/MitoFinder/NC_002333_Danio_rerio.gb",
   mitofinder = paste("--megahit"),
   annotate_cpus = 6,
   annotate_memory = 36,
@@ -54,13 +54,16 @@ for more info https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi}
 
 \item{assembler}{Assembler, choice of "GetOrgnalle" (default) or "MitoFinder"}
 
-\item{seeds_db}{Path to the gotOrganelle seeds database, can be a URL, cannot have same file name as labels_db}
+\item{seeds_db}{Path to the gotOrganelle seeds database, can be a URL, cannot have same file name as labels_db.
+Default is a fish database built from RefSeq. https://raw.githubusercontent.com/smithsonian/MitoPilot/main/ref_dbs/getOrganelle/seeds/fish_mito_seeds.fasta}
 
-\item{labels_db}{Path to the gotOrganelle labels database, can be a URL, cannot have same file name as seeds_db}
+\item{labels_db}{Path to the gotOrganelle labels database, can be a URL, cannot have same file name as seeds_db.
+Default is a fish database built from RefSeq. https://raw.githubusercontent.com/smithsonian/MitoPilot/main/ref_dbs/getOrganelle/seeds/fish_mito_labels.fasta}
 
 \item{getOrganelle}{Default getOrganelle command line options}
 
-\item{mitofinder_db}{MitoFinder reference db, must be GenBank format (.gb)}
+\item{mitofinder_db}{Path to MitoFinder reference db, must be GenBank format (.gb), can be a URL.
+Default is the Danio rerio mitogenome (https://raw.githubusercontent.com/Smithsonian/MitoPilot/refs/heads/main/ref_dbs/MitoFinder/NC_002333_Danio_rerio.gb)}
 
 \item{mitofinder}{Default MitoFinder command line options}
 
