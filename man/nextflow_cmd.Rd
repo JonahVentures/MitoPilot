@@ -7,7 +7,8 @@
 nextflow_cmd(
   workflow = c("assemble", "annotate"),
   path = NULL,
-  source = app_sys("nextflow")
+  source = app_sys("nextflow"),
+  userAsmbs = FALSE
 )
 }
 \arguments{
@@ -18,6 +19,8 @@ nextflow_cmd(
 
 \item{source}{Nextflow script source. By default, this will be in the
 `nextflow/` subdirectory of the package installation.}
+
+\item{userAsmbs}{User supplied assemblies, TRUE/FALSE? (default = FALSE)}
 }
 \description{
 Generate Nextflow command to run pipline

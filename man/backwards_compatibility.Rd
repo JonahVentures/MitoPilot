@@ -12,7 +12,10 @@ backwards_compatibility(path = ".")
 \description{
 Update old project database for backwards compatibility.
 Adds "reviewed", "ID_verified", "genetic_code", and "problematic" columns to the annotate table,
-"start_gene" column to the annotate_opts table,
-"assembler", "mitofinder_db", and "mitofinder" columns to the assemble_opts table,
-and "max_blast_hits" to the curate_opts table.
+"start_gene" column to the annotate_opts table. Adds
+"assembler", "mitofinder_db", and "mitofinder" columns to the assemble_opts table.
+Adds "max_blast_hits" to the curate_opts table.
+Also adds "asmbDir = 'NA'" to the .config params block
+and updates the container to the current MitoPilot version
+in the .config file.
 }

@@ -7,13 +7,6 @@
 #'   identifier (eg, species name)
 #' @param genetic_code Translation table for your organisms. See NCBI website
 #'   for more info https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi
-#' @param assemble_cpus Default # cpus for assembly
-#' @param assemble_memory default memory (GB) for assembly
-#' @param seeds_db Path to the gotOrganelle seeds database, can be a URL, cannot have same file name as labels_db.
-#'   Default is a fish database built from RefSeq. https://raw.githubusercontent.com/smithsonian/MitoPilot/main/ref_dbs/getOrganelle/seeds/fish_mito_seeds.fasta
-#' @param labels_db Path to the gotOrganelle labels database, can be a URL, cannot have same file name as seeds_db.
-#'   Default is a fish database built from RefSeq. https://raw.githubusercontent.com/smithsonian/MitoPilot/main/ref_dbs/getOrganelle/seeds/fish_mito_labels.fasta
-#' @param getOrganelle Default getOrganelle command line options
 #' @param annotate_cpus Default # cpus for annotation
 #' @param annotate_memory Default memory (GB) for annotation
 #' @param annotate_ref_db Default Mitos2 reference database
@@ -25,35 +18,14 @@
 #' @param curate_target Default target database for curation
 #' @param max_blast_hits Maximum number of top BLAST hits to retain (default = 100)
 #' @param curate_params Default curation parameters
-#' @param assembler Assembler, choice of "GetOrgnalle" (default) or "MitoFinder"
-#' @param mitofinder_db Path to MitoFinder reference db, must be GenBank format (.gb), can be a URL.
-#'   Default is the Danio rerio mitogenome (https://raw.githubusercontent.com/Smithsonian/MitoPilot/refs/heads/main/ref_dbs/MitoFinder/NC_002333_Danio_rerio.gb)
-#' @param mitofinder Default MitoFinder command line options
 #' @export
 #'
-new_db <- function(
+new_db_userAsmb <- function(
     db_path = "./.sqlite",
     mapping_fn = NULL,
     mapping_id = "ID",
     mapping_taxon = "Taxon",
     genetic_code = 2,
-    # Default assembly options
-    assemble_cpus = 6,
-    assemble_memory = 24,
-    assembler = "GetOrganelle",
-    seeds_db = "https://raw.githubusercontent.com/smithsonian/MitoPilot/main/ref_dbs/getOrganelle/seeds/fish_mito_seeds.fasta",
-    labels_db = "https://raw.githubusercontent.com/smithsonian/MitoPilot/main/ref_dbs/getOrganelle/labels/fish_mito_labels.fasta",
-    getOrganelle = paste(
-      "-F 'anonym'",
-      "-R 10 -k '21,45,65,85,105,115'",
-      "--larger-auto-ws",
-      "--expected-max-size 20000",
-      "--target-genome-size 16500"
-    ),
-    mitofinder_db = "https://raw.githubusercontent.com/Smithsonian/MitoPilot/refs/heads/main/ref_dbs/MitoFinder/NC_002333_Danio_rerio.gb",
-    mitofinder = paste(
-      "--megahit"
-    ),
     # Default annotation options
     annotate_cpus = 6,
     annotate_memory = 36,
@@ -81,25 +53,17 @@ new_db <- function(
     stop("Duplicate IDs found in mapping file")
   }
 
-  # Validate assembler choice
-  if (assembler %nin% c("GetOrganelle", "MitoFinder")) {
-    stop("Assembler not supported, valid options: [GetOrganelle, MitoFinder]")
+  # check for assembly and topology columns
+  if ("Assembly" %nin% colnames(mapping)) {
+    stop("Mapping file missing Assembly column")
+  }
+  if ("Topology" %nin% colnames(mapping)) {
+    stop("Mapping file missing Topology column")
   }
 
   # Validate ID length
   if (any(nchar(mapping[[mapping_id]]) > 18)) {
     stop("IDs must be no more than 18 characters")
-  }
-
-  # Set GetOrganelle databases if user did not supply them with MitoPilot::new_project()
-  # using default fish databases
-  if(is.null(seeds_db) & is.null(labels_db)){
-    seeds_db = "https://raw.githubusercontent.com/smithsonian/MitoPilot/main/ref_dbs/getOrganelle/seeds/fish_mito_seeds.fasta"
-    labels_db = "https://raw.githubusercontent.com/smithsonian/MitoPilot/main/ref_dbs/getOrganelle/labels/fish_mito_labels.fasta"
-  } else if(is.null(seeds_db)) {
-    seeds_db = "https://raw.githubusercontent.com/smithsonian/MitoPilot/main/ref_dbs/getOrganelle/seeds/fish_mito_seeds.fasta"
-  } else if(is.null(labels_db)) {
-    labels_db = "https://raw.githubusercontent.com/smithsonian/MitoPilot/main/ref_dbs/getOrganelle/labels/fish_mito_labels.fasta"
   }
 
   # Load default curation parameters
@@ -117,8 +81,11 @@ new_db <- function(
       ID = .data[[mapping_id]],
       Taxon = .data[[mapping_taxon]],
       genetic_code = genetic_code,
+      topology = .data[["Topology"]],
+      assembly = .data[["Assembly"]],
       export_group = NA_character_
-    )
+    ) |>
+    dplyr::select(-Topology, -Assembly)
   glue::glue_sql(
     "CREATE TABLE samples (
      {cols*},
@@ -190,6 +157,7 @@ new_db <- function(
       by = "pre_opts"
     )
 
+
   # Assemble table ----
   DBI::dbExecute(
     con,
@@ -221,46 +189,12 @@ new_db <- function(
           assemble_switch = 1,
           assemble_lock = 0,
           hide_switch = 0,
-          assemble_opts = "default",
+          assemble_opts = "user",
           time_stamp = NA_integer_
         ),
       in_place = TRUE,
       copy = TRUE,
       by = "ID"
-    )
-
-  ## Assemble options ----
-  DBI::dbExecute(
-    con,
-    "CREATE TABLE assemble_opts (
-      assemble_opts TEXT NOT NULL,
-      cpus INTEGER,
-      memory INTEGER,
-      getOrganelle TEXT,
-      seeds_db TEXT,
-      labels_db TEXT,
-      assembler TEXT,
-      mitofinder_db TEXT,
-      mitofinder TEXT,
-      PRIMARY KEY (assemble_opts)
-    );"
-  )
-  dplyr::tbl(con, "assemble_opts") |>
-    dplyr::rows_upsert(
-      data.frame(
-        assemble_opts = "default",
-        cpus = assemble_cpus,
-        memory = assemble_memory,
-        seeds_db = seeds_db,
-        labels_db = labels_db,
-        assembler = assembler,
-        getOrganelle = getOrganelle,
-        mitofinder_db = mitofinder_db,
-        mitofinder = mitofinder
-      ),
-      in_place = TRUE,
-      copy = TRUE,
-      by = "assemble_opts"
     )
 
   ## Add assemblies output ----
