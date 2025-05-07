@@ -57,8 +57,6 @@ for more info https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi}
 \item{max_blast_hits}{Maximum number of top BLAST hits to retain (default = 100)}
 
 \item{curate_params}{Default curation parameters}
-
-\item{asmb_path}{Path}
 }
 \description{
 Initialize a new project database
