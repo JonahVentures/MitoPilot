@@ -56,7 +56,7 @@ backwards_compatibility <- function(
 
   if(!(containerVer)){
     # update the container version in the .config
-    container_index <- grep("container =", conf)
+    container_index <- grep("container = .*mitopilot.*", conf)
     if (length(container_index) == 1) {
       conf[container_index] <- paste0("  container = \'", new_container, "\'")
     } else {
