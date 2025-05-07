@@ -29,7 +29,7 @@ Double check that the paths you specified when creating your project are correct
 Also make sure you're using the correct execution environment. 
 This error is commonly caused by using the "local" executor when running MitoPilot on a computing cluster.
 
-## Can I use my own assemblies with MitoPilot?
+## Can I use my own mitogenome assemblies with MitoPilot?
 
 Yes! See "Initializing a Project with User Assemblies" on the [main documentation page](https://smithsonian.github.io/MitoPilot/index.html).
 
