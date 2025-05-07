@@ -98,6 +98,7 @@ export_files <- function(
     annotations$gene_uniq <- make.unique(annotations$gene)
 
     dat <- dplyr::tbl(con, "samples") |>
+      dplyr::select(-dplyr::any_of("topology")) |>
       dplyr::filter(ID == !!.x) |>
       dplyr::left_join(
         dplyr::tbl(con, "annotate") |>

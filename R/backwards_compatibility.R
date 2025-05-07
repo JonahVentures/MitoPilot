@@ -5,7 +5,8 @@
 #' "start_gene" column to the annotate_opts table,
 #' "assembler", "mitofinder_db", and "mitofinder" columns to the assemble_opts table,
 #' and "max_blast_hits" to the curate_opts table.
-#'
+#' Also adds "asmbDir = 'NA'" to the params block of the nextflow .config file.
+#
 #' @param path Path to the project directory (default = current working directory)
 #'
 #' @export
@@ -23,7 +24,16 @@ backwards_compatibility <- function(
   annotate_opts_table <- DBI::dbReadTable(con, "annotate_opts") # read in annotations opts table
   curate_opts_table <- DBI::dbReadTable(con, "curate_opts") # read in curate opts table
 
-  if("start_gene" %in% names(annotate_opts_table) &&
+  # check if .config file contains "asmbDir" parameter
+  conf <- tryCatch({
+    readLines(file.path(path, ".config"))
+  }, error = function(e) {
+    stop("Error reading .config file: ", e$message)
+  })
+  asmbDir <- any(grep("asmbDir = ", conf))
+
+  if(asmbDir &&
+    "start_gene" %in% names(annotate_opts_table) &&
      "max_blast_hits" %in% names(curate_opts_table) &&
      "assembler" %in% names(assemble_opts_table) &&
      "mitofinder_db" %in% names(assemble_opts_table) &&
@@ -34,6 +44,14 @@ backwards_compatibility <- function(
      "reviewed" %in% names(annotate_table)) {
     message("nothing to update")
     return(invisible(NULL))
+  }
+
+  # if .config does not contain "asmbDir" param, add it
+  if(!(asmbDir)){
+    message("added \"asmbDir = 'NA'\" to nextflow .config file")
+    rawDir_line <- grep("rawDir", conf) # find line containing "rawDir"
+    conf <- append(conf, "    asmbDir = 'NA'", after = rawDir_line) # add new line to conf after "rawDir" line
+    writeLines(conf, file.path(path, ".config"))
   }
 
   # if genetic_code column doesn't exist, add it

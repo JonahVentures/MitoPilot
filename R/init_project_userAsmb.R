@@ -1,18 +1,20 @@
-#' Initialize new MitoPilot Project
+#' Initialize new MitoPilot Project with user-provided mitogenome assemblies
 #'
 #' @param path Path to the project directory (default = current working
 #'   directory)
 #' @param mapping_fn Path to a mapping file. Should be a csv that minimally
 #'   includes an `ID` column with a unique identifier for each sample, a `Taxon`
 #'   column containing taxonomic information for each sample, and columns
-#'   `R1` and `R2` specifying the names of the raw paired read inputs. May include
-#'   additional columns with other sample metadata.
+#'   `R1` and `R2` specifying the names of the raw paired read inputs, an `Assembly` column
+#'   containing names of mitogenome assembly fasta files (one contig/scaffold sequence per sample),
+#'   and a `Topology` column containing information about the assembly topology
+#'   ("circular" or "linear") May include additional columns with other sample metadata.
 #' @param mapping_id The name of the column in the mapping file that contains
 #'   the unique sample identifiers (default = "ID").
 #' @param data_path Path to the directory where the raw data is located. Can be
-#'   a AWS s3 bucket even if not using AWS for pipeline execution..
-#' @param min_depth Minimum sequencing depth after pre-processing to proceed
-#'   with assembly (default: 2000000)
+#'   a AWS s3 bucket even if not using AWS for pipeline execution.
+#' @param assembly_path Path to the directory where the mitogenome assemblies are located. Can be
+#'   a AWS s3 bucket even if not using AWS for pipeline execution.
 #' @param genetic_code Translation table for your organisms. See NCBI website
 #'   for more info https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi
 #' @param executor The executor to use for running the nextflow pipeline. Must
@@ -20,8 +22,6 @@
 #' @param Rproj (logical) Initialize and open an RStudio project in the project
 #'   directory (default = TRUE). This option has no effect if not running
 #'   interactively in RStudio.
-#' @param custom_seeds_db Full path to custom seeds database for GetOrganelle
-#' @param custom_labels_db Full path to custom labels database for GetOrganelle
 #' @param force (logical) Force recreating of existing project database and
 #'   config files (default = FALSE).
 #' @param config (optional) provide a path to an existing custom nextflow config
@@ -33,17 +33,15 @@
 #'
 #' @export
 #'
-new_project <- function(
+new_project_userAsmb <- function(
     path = ".",
     mapping_fn = NULL,
     mapping_id = "ID",
     data_path = NULL,
-    min_depth = 2000000,
+    assembly_path = "NA",
     genetic_code = 2,
     executor = c("local", "awsbatch", "NMNH_Hydra", "NOAA_SEDNA"),
     container = paste0("macguigand/mitopilot:", utils::packageVersion("MitoPilot")),
-    custom_seeds_db = NULL,
-    custom_labels_db = NULL,
     config = NULL,
     Rproj = TRUE,
     force = FALSE,
@@ -59,6 +57,11 @@ new_project <- function(
   # Normalize data path (if provided)----
   if(length(data_path)==1){
     data_path <- normalizePath(data_path)
+  }
+
+  # Normalize assembly path (if provided)----
+  if(length(assembly_path)==1){
+    assembly_path <- normalizePath(assembly_path)
   }
 
   # Read mapping file ----
@@ -106,13 +109,11 @@ new_project <- function(
     file.remove(db)
   }
 
-  new_db(
+  new_db_userAsmb(
     db_path = file.path(path, ".sqlite"),
     genetic_code = genetic_code,
     mapping_fn = mapping_out,
     mapping_id = mapping_id,
-    seeds_db = custom_seeds_db,
-    labels_db = custom_labels_db,
     ...
   )
 
@@ -126,8 +127,8 @@ new_project <- function(
   readLines(config) |>
     stringr::str_replace("<<CONTAINER_ID>>", container %||% "<<CONTAINER_ID>>") |>
     stringr::str_replace("<<RAW_DIR>>", data_path %||% "<<RAW_DIR>>") |>
-    stringr::str_replace("<<ASMB_DIR>>", "NA" %||% "<<ASMB_DIR>>") |>
-    stringr::str_replace("<<MIN_DEPTH>>", format(min_depth %||% "<<MIN_DEPTH>>", scientific = F)) |>
+    stringr::str_replace("<<ASMB_DIR>>", assembly_path %||% "<<ASMB_DIR>>") |>
+    stringr::str_replace("<<MIN_DEPTH>>", format(2000000 %||% "<<MIN_DEPTH>>", scientific = F)) |>
     stringr::str_replace("<<GENETIC_CODE>>", format(genetic_code %||% "<<GENETIC_CODE>>", scientific = F)) |>
     writeLines(file.path(path, ".config"))
 

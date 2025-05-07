@@ -15,4 +15,5 @@ Adds "reviewed", "ID_verified", "genetic_code", and "problematic" columns to the
 "start_gene" column to the annotate_opts table,
 "assembler", "mitofinder_db", and "mitofinder" columns to the assemble_opts table,
 and "max_blast_hits" to the curate_opts table.
+Also adds "asmbDir = 'NA'" to the params block of the nextflow .config file.
 }
