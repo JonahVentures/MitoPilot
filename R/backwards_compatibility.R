@@ -55,6 +55,7 @@ backwards_compatibility <- function(
   }
 
   if(!(containerVer)){
+    conf <- readLines(file.path(path, ".config"))
     # update the container version in the .config
     container_index <- grep("container = .*mitopilot.*", conf)
     if (length(container_index) == 1) {
@@ -63,10 +64,12 @@ backwards_compatibility <- function(
       stop("Container not found or multiple containers specificed in Nextflow .config")
     }
     message("updated container version in nextflow .config file")
+    writeLines(conf, file.path(path, ".config"))
   }
 
   # if .config does not contain "asmbDir" param, add it
   if(!(asmbDir)){
+    conf <- readLines(file.path(path, ".config"))
     message("added \"asmbDir = 'NA'\" to nextflow .config file")
     rawDir_line <- grep("rawDir", conf) # find line containing "rawDir"
     conf <- append(conf, "    asmbDir = 'NA'", after = rawDir_line) # add new line to conf after "rawDir" line
