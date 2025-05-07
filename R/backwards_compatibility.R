@@ -2,10 +2,13 @@
 #'
 #' Update old project database for backwards compatibility.
 #' Adds "reviewed", "ID_verified", "genetic_code", and "problematic" columns to the annotate table,
-#' "start_gene" column to the annotate_opts table,
-#' "assembler", "mitofinder_db", and "mitofinder" columns to the assemble_opts table,
-#' and "max_blast_hits" to the curate_opts table.
-#' Also adds "asmbDir = 'NA'" to the params block of the nextflow .config file.
+#' "start_gene" column to the annotate_opts table. Adds
+#' "assembler", "mitofinder_db", and "mitofinder" columns to the assemble_opts table.
+#' Adds "max_blast_hits" to the curate_opts table.
+#' Also adds "asmbDir = 'NA'" to the .config params block
+#' and updates the container to the current MitoPilot version
+#' in the .config file.
+#'
 #
 #' @param path Path to the project directory (default = current working directory)
 #'
@@ -32,7 +35,12 @@ backwards_compatibility <- function(
   })
   asmbDir <- any(grep("asmbDir = ", conf))
 
+  # check if .config file contains latest container version
+  new_container = paste0("macguigand/mitopilot:", utils::packageVersion("MitoPilot"))
+  containerVer <- any(grep(new_container, conf))
+
   if(asmbDir &&
+     containerVer &&
     "start_gene" %in% names(annotate_opts_table) &&
      "max_blast_hits" %in% names(curate_opts_table) &&
      "assembler" %in% names(assemble_opts_table) &&
@@ -44,6 +52,17 @@ backwards_compatibility <- function(
      "reviewed" %in% names(annotate_table)) {
     message("nothing to update")
     return(invisible(NULL))
+  }
+
+  if(!(containerVer)){
+    # update the container version in the .config
+    container_index <- grep("container =", conf)
+    if (length(container_index) == 1) {
+      conf[container_index] <- paste0("  container = \'", new_container, "\'")
+    } else {
+      stop("Container not found or multiple containers specificed in Nextflow .config")
+    }
+    message("updated container version in nextflow .config file")
   }
 
   # if .config does not contain "asmbDir" param, add it
