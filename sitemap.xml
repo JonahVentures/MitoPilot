@@ -26,11 +26,14 @@
 <url><loc>https://smithsonian.github.io/MitoPilot/reference/export_db_to_csv.html</loc></url>
 <url><loc>https://smithsonian.github.io/MitoPilot/reference/export_files.html</loc></url>
 <url><loc>https://smithsonian.github.io/MitoPilot/reference/get_assembly.html</loc></url>
+<url><loc>https://smithsonian.github.io/MitoPilot/reference/get_assembly_userAsmb.html</loc></url>
 <url><loc>https://smithsonian.github.io/MitoPilot/reference/get_top_hits_local.html</loc></url>
 <url><loc>https://smithsonian.github.io/MitoPilot/reference/index.html</loc></url>
 <url><loc>https://smithsonian.github.io/MitoPilot/reference/make_PCG_alignments.html</loc></url>
 <url><loc>https://smithsonian.github.io/MitoPilot/reference/new_db.html</loc></url>
+<url><loc>https://smithsonian.github.io/MitoPilot/reference/new_db_userAsmb.html</loc></url>
 <url><loc>https://smithsonian.github.io/MitoPilot/reference/new_project.html</loc></url>
+<url><loc>https://smithsonian.github.io/MitoPilot/reference/new_project_userAsmb.html</loc></url>
 <url><loc>https://smithsonian.github.io/MitoPilot/reference/new_test_project.html</loc></url>
 <url><loc>https://smithsonian.github.io/MitoPilot/reference/nextflow_cmd.html</loc></url>
 <url><loc>https://smithsonian.github.io/MitoPilot/reference/params_diptera_mito.html</loc></url>
