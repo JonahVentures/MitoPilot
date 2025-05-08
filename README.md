@@ -133,7 +133,7 @@ devtools::install()
 MitoPilot includes a set of pre-filtered test data, a function for
 setting up an example project (`new_test_project()`), and detailed
 [tutorial
-documentation](https://smithsonian.github.io/MitoPilot/articles/test-project.html).
+documentation](https://smithsonian.github.io/MitoPilot/articles/MitoPilot.html).
 It is highly recommended that you use the test project to ensure
 successful installation and familiarize yourself with the pipeline
 before starting a MitoPilot project with your own data.
