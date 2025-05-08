@@ -31,7 +31,7 @@ This error is commonly caused by using the "local" executor when running MitoPil
 
 ## Can I use my own mitogenome assemblies with MitoPilot?
 
-Yes! See "Initializing a Project with User Assemblies" on the [main documentation page](https://smithsonian.github.io/MitoPilot/index.html).
+Yes! See the ["Initializing a Project with User Assemblies"](https://smithsonian.github.io/MitoPilot/#initializing-a-project-with-user-assemblies) section of the main page.
 
 ## How do I skip processing certain samples?
 
