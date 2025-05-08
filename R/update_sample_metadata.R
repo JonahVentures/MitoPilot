@@ -63,6 +63,13 @@ update_sample_metadata <- function(
     message("These columns will not be updated in the database")
   }
 
+  # remove Assembly and Topology columns from updated mapping
+  if("Assembly" %in% colnames(mapping) | "Topology" %in% colnames(mapping)){
+    mapping = mapping[,-which(colnames(mapping) %in% c("Assembly", "Topology"))]
+    message("Update mapping file contains user assembly information (Assembly and/or Topology)")
+    message("These columns will not be updated in the database")
+  }
+
   # read existing sample table
   sample_table <- DBI::dbReadTable(con, "samples")
   # convert everything to characters

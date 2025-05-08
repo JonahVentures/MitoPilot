@@ -42,17 +42,39 @@ add_samples <- function(
     stop("IDs must be no more than 18 characters")
   }
 
+  # get genetic_code from .config
+  conf <- readLines(file.path(path, ".config"))
+  index <- grep("genetic_code =", conf)
+  if (length(index) != 1) {
+    stop("Could not find genetic_code in Nextflow .config, you may need to update your project with `backwards_compatibility()`")
+  }
+  genetic_code <- stringr::str_trim(stringr::str_split(test, "=")[[1]][2])
+
   # Create sqlite connection
   con <- DBI::dbConnect(RSQLite::SQLite(), dbname = file.path(path, ".sqlite"))
   on.exit(DBI::dbDisconnect(con))
 
   # Metadata table ----
   ##############################################################################################################
-  mapping <- mapping |>
-    dplyr::mutate(
-      ID = .data[[mapping_id]],
-      Taxon = .data[[mapping_taxon]]
-    )
+  if("Assembly" %in% colnames(mapping) & "Topology" %in% colnames(mapping)){
+    mapping <- mapping |>
+      dplyr::mutate(
+        ID = .data[[mapping_id]],
+        Taxon = .data[[mapping_taxon]],
+        genetic_code = genetic_code,
+        topology = .data[["Topology"]],
+        assembly = .data[["Assembly"]],
+      ) |>
+      dplyr::select(-Topology, -Assembly)
+  } else {
+    mapping <- mapping |>
+      dplyr::mutate(
+        ID = .data[[mapping_id]],
+        Taxon = .data[[mapping_taxon]],
+        genetic_code = genetic_code
+      )
+  }
+
   # convert everything to characters
   mapping <- mapping %>%
     dplyr::mutate(across(everything(), as.character))

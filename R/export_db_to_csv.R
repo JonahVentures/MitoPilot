@@ -16,7 +16,8 @@ export_db_to_csv <- function(
 
   # read tables
   # samples
-  sample_table <- DBI::dbReadTable(con, "samples")
+  sample_table <- DBI::dbReadTable(con, "samples") |>
+    dplyr::select(-any_of("topology"))
   # preprocess
   pre_table <- DBI::dbReadTable(con, "preprocess")
   # assembly
