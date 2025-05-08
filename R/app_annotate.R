@@ -42,7 +42,6 @@ annotate_server <- function(id) {
         "table",
         data = rv$data
       )
-      message(str(rv$data))
     })
 
     # Render table ----
