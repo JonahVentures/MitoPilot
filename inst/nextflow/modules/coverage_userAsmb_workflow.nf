@@ -24,35 +24,35 @@ params.sqlWriteAssemble =   'UPDATE assemble SET paths=?, scaffolds=?, length=?,
 workflow COVERAGE_userAsmb {
     take:
         input
-    
+
     main:
         // sample info channel from DB
         channel.fromQuery(params.sqlRead, db: 'sqlite')
             .map{ it ->
-                tuple( 
+                tuple(
                     it[0],                                          // ID
                     file(params.asmbDir + "/" + it[1]),             // assembly
                     it[2],                                          // topology
                     it[3]                                          // assemble opts dummy var
-                )                      
+                )
             }
             .set { sample_info }
 
         // Coverage Input Channel
         input
-            // cross with sample info 
+            // cross with sample info
             .cross(sample_info)
             .map{ it ->
                 tuple(
                     it[0][0],                                                   // ID
                     it[0][1],                                                   // trimmed reads in
-                    it[1][1],                                                   // assembly 
+                    it[1][1],                                                   // assembly
                     it[1][2],                                                   // topology
                     it[1][3],                                                   // assemble opts dummy var
                 )
             }
             .set { coverage_in }
-        
+
         // Coverage
         coverage_userAsmb(coverage_in).set { coverage_out }
 
@@ -62,7 +62,7 @@ workflow COVERAGE_userAsmb {
             .filter{ it =~ /(.*coverageStats.csv)$/ }
             .splitCsv(header: true, sep: ',')
             .take(2)
-            .map { it -> 
+            .map { it ->
                 tuple(
                     it.SeqId,
                     it.MeanDepth,
@@ -71,9 +71,9 @@ workflow COVERAGE_userAsmb {
                 )
             }
             .groupTuple()
-            .map { it -> 
+            .map { it ->
                 tuple(
-                    it[1].join(' '),                   // mean depth  
+                    it[1].join(' '),                   // mean depth
                     it[2].join(' '),                   // gc
                     it[3].join(' '),                   // error rate
                     params.ts,                         // timestamp
@@ -145,7 +145,7 @@ workflow COVERAGE_userAsmb {
                 if(it[1] > 1){                      // mark fragmented assemblies
                     it[2] = 'fragmented'
                     it[4] = '3'
-                    it[5] = 'Output contains distonnected contigs'
+                    it[5] = 'Output contains disconnected contigs'
                 }
                 if(it[0] > 1){                      // mark unresolved assemblies
                     it[4] = '3'
@@ -154,5 +154,5 @@ workflow COVERAGE_userAsmb {
                 return it
             }
             .sqlInsert(statement: params.sqlWriteAssemble , db: 'sqlite')
-    
+
 }

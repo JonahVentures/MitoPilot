@@ -1,7 +1,7 @@
 include {assemble} from './assemble.nf'
 
 params.sqlRead =  'SELECT a.ID, a.assemble_opts, opts.cpus, opts.memory, ' +
-                  'opts.seeds_db, opts.labels_db, opts.getOrganelle, opts.assembler, ' + 
+                  'opts.seeds_db, opts.labels_db, opts.getOrganelle, opts.assembler, ' +
                   'opts.mitofinder_db, opts.mitofinder, s.genetic_code ' +
                   'FROM assemble a ' +
                   'JOIN assemble_opts opts ' +
@@ -36,15 +36,15 @@ workflow ASSEMBLE {
                         cpus: it[2],                                            // cpus
                         memory: it[3],                                          // memory
                         getOrganelle: it[6],                                     // getOrganelle options
-                        mitofinder: it[9],                                      // mitofinder options 
-                        assembler: it[7]                                        // assembler 
+                        mitofinder: it[9],                                      // mitofinder options
+                        assembler: it[7]                                        // assembler
                     ],
                     [
                         it[4],                                        // getOrganelle seeds_db
-                        it[5]                                        // getOrganelle labels_db      
+                        it[5]                                        // getOrganelle labels_db
                     ],
-                    it[8],                                          // mitofinder .gb reference database 
-                    it[10]                                         // genetic code       
+                    it[8],                                          // mitofinder .gb reference database
+                    it[10]                                         // genetic code
                 )
             }
             .set { assemble_opts }
@@ -68,7 +68,7 @@ workflow ASSEMBLE {
                     it[0][1],                                                   // trimmed reads in
                     it[1][2],                                                   // assembly options
                     it[1][3],                                                    // getOrganelle databases (seeds_db and labels_db)
-                    it[1][4],                                                    // mitofinder .gb reference database 
+                    it[1][4],                                                    // mitofinder .gb reference database
                     it[1][5]                                                    // genetic code
                 )
             }
@@ -141,7 +141,7 @@ workflow ASSEMBLE {
                 if(it[1] > 1){                      // mark fragmented assemblies
                     it[2] = 'fragmented'
                     it[4] = '3'
-                    it[5] = 'Output contains distonnected contigs'
+                    it[5] = 'Output contains disconnected contigs'
                 }
                 if(it[0] > 1){                      // mark unresolved assemblies
                     it[4] = '3'
