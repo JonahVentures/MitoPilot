@@ -60,7 +60,7 @@ If you have a group of organisms that you would like to try with MitoPilot, feel
 
 # Installation
 
-We have provided detailed installation instructions for the following computing clusters:
+We provide detailed installation instructions for the following computing clusters:
 
 - [Smithsonian NMNH Hydra](https://smithsonian.github.io/MitoPilot/articles/NMNH-Hydra.html)
 - [NOAA SEDNA](https://smithsonian.github.io/MitoPilot/articles/NOAA-SEDNA.html)

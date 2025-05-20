@@ -95,7 +95,7 @@ Dan MacGuigan directly at <daniel.macguigan@noaa.gov>.
 
 # Installation
 
-We have provided detailed installation instructions for the following
+We provide detailed installation instructions for the following
 computing clusters:
 
 - [Smithsonian NMNH
