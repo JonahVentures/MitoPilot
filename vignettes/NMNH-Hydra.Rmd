@@ -56,20 +56,83 @@ This should allow you to call `nextflow` from anywhere on the cluster.
 
 ## Launching RStudio server
 
-Next, let's launch RStudio server, which we'll use to install and run MitoPilot.
+We will use RStudio server to run MitoPilot. RStudio server functions much like the RStudio on your local computer, but using the Hydra cluster's data storage and computational resources.
 
-- login to Hydra
-- run `conda deactivate` to avoid package conflicts (may not be necessary for all users)
-- run `module load tools/R/RStudio/server`
-- run `start-rstudio-server` (you may be asked to run a different command if this is your first time)
-- leave this cluster terminal window open 
-- in a new terminal window on your local computer:
-	- start an ssh tunnel by running something like `ssh -N -L 8787:compute-64-16:8787 sylvain@hydra-login01.si.edu`
-	  - the exact command should have been printed by `start-rstudio-server` in your cluster terminal window
-	- leave this local terminal window open
-	- open a web browser and enter `http://localhost:8787` in the URL bar
-	- enter your cluster login credentials to access the RStudio server
-	- any commands run in this new window will execute on the cluster in the interactive session
+There are two ways to access RStudio server on Hydra.
+
+### Tunneling to a RStudio server session
+
+We recommend always using an interactive session when tunneling to RStudio server. This avoids unnecessary computational burden on the login nodes. To launch an interactive session, run the following.
+
+```{bash eval=F}
+qrsh -l h_rt=24:00:00 -pe mthread 2
+```
+
+<div class="alert alert-note">
+  <strong>Note:</strong> You must include `-pe mthread 2` in order to have enough available RAM for building the MitoPilot Singularity image.
+</div>
+
+<div class="alert alert-note">
+  <strong>Note:</strong> Interactive sessions on Hydra can run for a maximum of 24 hours. Additionally, users are limited to one active interactive session at a time.
+</div>
+
+Once your interactive session has started, launch RStudio server.
+
+```{bash eval=F}
+# avoid package conflicts (may not be necessary for all users)
+conda deactivate 
+# load the RStudio server module
+module load tools/R/RStudio/server
+# launch RStudio server
+start-rstudio-server
+```
+
+<div class="alert alert-note">
+  <strong>Note:</strong> If this is your first time launching RStudio server, you may be asked to run a different command.
+</div>
+
+You will see something like this printed to your screen.
+
+```
+start-rstudio-server: starting RStudio server on host=login02 and port=8787
+  you need to create a ssh tunnel on your local machine with
+    ssh -N -L 8787:login02:8787 macguigand@hydra-login01.si.edu
+
+Point your browser to http://localhost:8787 on your local machine.
+Use Control+C in this window to kill the server when done.
+
+TTY detected. Printing informational message about logging configuration. Logging configuration loaded from '/etc/rstudio/logging.conf'. Logging to '/home/macguigand/.local/share/rstudio/log/rserver.log'.
+```
+
+<div class="alert alert-note">
+  <strong>Note:</strong> If you get a message saying "ERROR system error 98 (Address already in use)", someone else has a tunnel established with the default port (8787). To fix this, try using a different port, e.g. `start-rstudio-server -port 8890`. Any port number between 1025-65535 is allowed.
+</div>
+
+Leave this cluster terminal window open, open a new terminal window on your local computer, and run the `ssh` command printed by `start-rstudio-server`.
+
+```{bash eval=F}
+ssh -N -L 8787:login02:8787 macguigand@hydra-login01.si.edu
+```
+
+Enter your Hydra password when prompted. If nothing happens, this means that you have successfully established a SSH tunnel and can connect to RStudio server.
+
+Leaving both terminal windows open, enter [http://localhost:YOUR_PORT_NUMBER](http://localhost:YOUR_PORT_NUMBER) in a web browser. We recommend using Chrome or Firefox. There are some known issues running MitoPilot with Safari.
+
+Enter your cluster login credentials to access the RStudio server. This should open a full RStudio session in your browser. Any R commands run in this RStudio window will execute on the cluster.
+
+### RStudio Galaxy server
+
+The Hydra Team recently launched a new interactive R Studio environment that is accessible directly via a browser, at [https://galaxy.si.edu/R4](https://galaxy.si.edu/R4).
+
+Hydra users can leverage this server to test, debug, and develop R based workflows using the interactive R Studio GUI (currently running R 4.4.3).
+
+By logging in with your Hydra account credentials, users will have access to the storage under /pool, /scratch and /store. This server offers resources totaling 192 CPUs and 1.5 T of RAM.
+
+***Notes:***
+
+1. This is a shared resource and should be used accordingly. Long running jobs or jobs requiring the entire resources of the server would be more appropriate as a job submission.
+2. This server is only accessible from trusted computers, not on the public internet. For technical reasons, to access this resource via telework.si.edu, go to [https://galaxy.si.edu](https://galaxy.si.edu) and then choose the "R4 v443" option.
+3. This is a new resource - please be patient as we test this offering with our user community. We will evaluate this test once Hydra is moved to the new datacenter and decide whether it should be kept or altered in any way.
 
 ## Installing MitoPilot
 
@@ -96,29 +159,7 @@ We also recommend clearing your Singularity cache with `singularity cache clean`
 
 ## Launching MitoPilot
 
-We recommend running MitoPilot within an interactive session on the cluster to avoid unnecessary computational burden on the login nodes. First, initialize an interactive session on Hydra.
-
-```{bash eval=F}
-qrsh -l h_rt=24:00:00 -pe mthread 2
-```
-
-<div class="alert alert-note">
-  <strong>Note:</strong> You must include `-pe mthread 2` in order to have enough available RAM for building the MitoPilot Singularity image.
-</div>
-
-<div class="alert alert-note">
-  <strong>Note:</strong> Interactive sessions on Hydra can run for a maximum of 24 hours. Additionally, users are limited to one active interactive session at a time.
-</div>
-
-Once the interactive session starts, you can launch RStudio server.
-
-```{bash eval=F}
-conda deactivate
-module load tools/R/RStudio/server tools/java/21.0.2
-start-rstudio-server
-```
-
-Follow the login instructions as presented above. Once you have an Rstudio server window open, run `library(MitoPilot)` to load the package.
+To load the MitoPilot R package, run `library(MitoPilot)` within your RStudio server session. You can now utilize all of MitoPilot's functions, such as [initializing a project](https://smithsonian.github.io/MitoPilot/#initializing-a-project) or [opening the R Shiny GUI](https://smithsonian.github.io/MitoPilot/#running-the-pipeline). 
 
 Want to learn how to use MitoPilot? Check out the [Test Project Tutorial](https://Smithsonian.github.io/MitoPilot/articles/test-project.html).
 
