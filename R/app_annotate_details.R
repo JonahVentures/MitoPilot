@@ -295,16 +295,16 @@ annotations_details_server <- function(id, rv) {
         )
       # plot with dynamic width
       #plotOutput(ns("coverage_plot"), width = paste0(rv$updating$length, "px"), height = "125px")  # OLD CODE, problems with Cairo
-      imageOutput(ns("coverage_plot"), width = paste0(rv$updating$length, "px"), height = "125px")
+      shiny::imageOutput(ns("coverage_plot"), width = paste0(rv$updating$length, "px"), height = "125px")
     })
-    output$coverage_plot <- renderImage({
+    output$coverage_plot <- shiny::renderImage({
       req(rv$coverage_plot, rv$coverage)
 
       # Temporary file with .jpg extension
       outfile <- tempfile(fileext = ".jpg")
 
       # Save the combined plot as JPEG
-      jpeg(outfile, width = rv$updating$length, height = 150, units = "px", quality = 100)
+      grDevices::jpeg(outfile, width = rv$updating$length, height = 150, units = "px", quality = 100)
       combined_plot <- rv$coverage_plot / rv$genes_plot + patchwork::plot_layout(heights = c(3, 1))
       print(combined_plot)
       dev.off()

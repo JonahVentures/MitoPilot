@@ -55,7 +55,8 @@ Imports:
     utils,
     waiter,
     zoo,
-    pwalign
+    pwalign,
+    jpeg
 Suggests:
     knitr
 VignetteBuilder:
