@@ -118,43 +118,101 @@ Nextflow.</p>
 <div class="section level3">
 <h3 id="launching-rstudio-server">Launching RStudio server<a class="anchor" aria-label="anchor" href="#launching-rstudio-server"></a>
 </h3>
-<p>Next, let’s launch RStudio server, which we’ll use to install and run
-MitoPilot.</p>
-<ul>
-<li>login to Hydra</li>
-<li>run <code>conda deactivate</code> to avoid package conflicts (may
-not be necessary for all users)</li>
-<li>run <code>module load tools/R/RStudio/server</code>
-</li>
-<li>run <code>start-rstudio-server</code> (you may be asked to run a
-different command if this is your first time)</li>
-<li>leave this cluster terminal window open</li>
-<li>in a new terminal window on your local computer:
-<ul>
-<li>start an ssh tunnel by running something like
-<code>ssh -N -L 8787:compute-64-16:8787 sylvain@hydra-login01.si.edu</code>
-<ul>
-<li>the exact command should have been printed by
-<code>start-rstudio-server</code> in your cluster terminal window</li>
-</ul>
-</li>
-<li>leave this local terminal window open</li>
-<li>open a web browser and enter <code>http://localhost:8787</code> in
-the URL bar</li>
-<li>enter your cluster login credentials to access the RStudio
-server</li>
-<li>any commands run in this new window will execute on the cluster in
-the interactive session</li>
-</ul>
-</li>
-</ul>
+<p>We will use RStudio server to run MitoPilot. RStudio server functions
+much like the RStudio on your local computer, but using the Hydra
+cluster’s data storage and computational resources.</p>
+<p>There are two ways to access RStudio server on Hydra.</p>
+<div class="section level4">
+<h4 id="tunneling-to-a-rstudio-server-session">Tunneling to a RStudio server session<a class="anchor" aria-label="anchor" href="#tunneling-to-a-rstudio-server-session"></a>
+</h4>
+<p>We recommend always using an interactive session when tunneling to
+RStudio server. This avoids unnecessary computational burden on the
+login nodes. To launch an interactive session, run the following.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">qrsh</span> <span class="at">-l</span> h_rt=24:00:00 <span class="at">-pe</span> mthread 2</span></code></pre></div>
+<div class="alert alert-note">
+<p><strong>Note:</strong> You must include <code>-pe mthread 2</code> in
+order to have enough available RAM for building the MitoPilot
+Singularity image.</p>
+</div>
+<div class="alert alert-note">
+<p><strong>Note:</strong> Interactive sessions on Hydra can run for a
+maximum of 24 hours. Additionally, users are limited to one active
+interactive session at a time.</p>
+</div>
+<p>Once your interactive session has started, launch RStudio server.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># avoid package conflicts (may not be necessary for all users)</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="ex">conda</span> deactivate </span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co"># load the RStudio server module</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="ex">module</span> load tools/R/RStudio/server</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co"># launch RStudio server</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="ex">start-rstudio-server</span></span></code></pre></div>
+<div class="alert alert-note">
+<p><strong>Note:</strong> If this is your first time launching RStudio
+server, you may be asked to run a different command.</p>
+</div>
+<p>You will see something like this printed to your screen.</p>
+<pre><code>start-rstudio-server: starting RStudio server on host=login02 and port=8787
+  you need to create a ssh tunnel on your local machine with
+    ssh -N -L 8787:login02:8787 macguigand@hydra-login01.si.edu
+
+Point your browser to http://localhost:8787 on your local machine.
+Use Control+C in this window to kill the server when done.
+
+TTY detected. Printing informational message about logging configuration. Logging configuration loaded from '/etc/rstudio/logging.conf'. Logging to '/home/macguigand/.local/share/rstudio/log/rserver.log'.</code></pre>
+<div class="alert alert-note">
+<p><strong>Note:</strong> If you get a message saying “ERROR system
+error 98 (Address already in use)”, someone else has a tunnel
+established with the default port (8787). To fix this, try using a
+different port, e.g. <code>start-rstudio-server -port 8890</code>. Any
+port number between 1025-65535 is allowed.</p>
+</div>
+<p>Leave this cluster terminal window open, open a new terminal window
+on your local computer, and run the <code>ssh</code> command printed by
+<code>start-rstudio-server</code>.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-N</span> <span class="at">-L</span> 8787:login02:8787 macguigand@hydra-login01.si.edu</span></code></pre></div>
+<p>Enter your Hydra password when prompted. If nothing happens, this
+means that you have successfully established a SSH tunnel and can
+connect to RStudio server.</p>
+<p>Leaving both terminal windows open, enter <a href="http://localhost:YOUR_PORT_NUMBER" class="external-link">http://localhost:YOUR_PORT_NUMBER</a>
+in a web browser. We recommend using Chrome or Firefox. There are some
+known issues running MitoPilot with Safari.</p>
+<p>Enter your cluster login credentials to access the RStudio server.
+This should open a full RStudio session in your browser. Any R commands
+run in this RStudio window will execute on the cluster.</p>
+</div>
+<div class="section level4">
+<h4 id="rstudio-galaxy-server">RStudio Galaxy server<a class="anchor" aria-label="anchor" href="#rstudio-galaxy-server"></a>
+</h4>
+<p>The Hydra Team recently launched a new interactive R Studio
+environment that is accessible directly via a browser, at <a href="https://galaxy.si.edu/R4" class="external-link">https://galaxy.si.edu/R4</a>.</p>
+<p>Hydra users can leverage this server to test, debug, and develop R
+based workflows using the interactive R Studio GUI (currently running R
+4.4.3).</p>
+<p>By logging in with your Hydra account credentials, users will have
+access to the storage under /pool, /scratch and /store. This server
+offers resources totaling 192 CPUs and 1.5 T of RAM.</p>
+<p><strong><em>Notes:</em></strong></p>
+<ol style="list-style-type: decimal">
+<li>This is a shared resource and should be used accordingly. Long
+running jobs or jobs requiring the entire resources of the server would
+be more appropriate as a job submission.</li>
+<li>This server is only accessible from trusted computers, not on the
+public internet. For technical reasons, to access this resource via
+telework.si.edu, go to <a href="https://galaxy.si.edu" class="external-link">https://galaxy.si.edu</a> and then choose
+the “R4 v443” option.</li>
+<li>This is a new resource - please be patient as we test this offering
+with our user community. We will evaluate this test once Hydra is moved
+to the new datacenter and decide whether it should be kept or altered in
+any way.</li>
+</ol>
+</div>
 </div>
 <div class="section level3">
 <h3 id="installing-mitopilot">Installing MitoPilot<a class="anchor" aria-label="anchor" href="#installing-mitopilot"></a>
 </h3>
 <p>To install MitoPilot, use the RStudio server window to run the
 following. This might take a while.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
@@ -180,28 +238,11 @@ MitoPilot Singularity image.</p>
 <div class="section level3">
 <h3 id="launching-mitopilot">Launching MitoPilot<a class="anchor" aria-label="anchor" href="#launching-mitopilot"></a>
 </h3>
-<p>We recommend running MitoPilot within an interactive session on the
-cluster to avoid unnecessary computational burden on the login nodes.
-First, initialize an interactive session on Hydra.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">qrsh</span> <span class="at">-l</span> h_rt=24:00:00 <span class="at">-pe</span> mthread 2</span></code></pre></div>
-<div class="alert alert-note">
-<p><strong>Note:</strong> You must include <code>-pe mthread 2</code> in
-order to have enough available RAM for building the MitoPilot
-Singularity image.</p>
-</div>
-<div class="alert alert-note">
-<p><strong>Note:</strong> Interactive sessions on Hydra can run for a
-maximum of 24 hours. Additionally, users are limited to one active
-interactive session at a time.</p>
-</div>
-<p>Once the interactive session starts, you can launch RStudio
-server.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">conda</span> deactivate</span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="ex">module</span> load tools/R/RStudio/server tools/java/21.0.2</span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="ex">start-rstudio-server</span></span></code></pre></div>
-<p>Follow the login instructions as presented above. Once you have an
-Rstudio server window open, run <code><a href="https://github.com/Smithsonian/MitoPilot" class="external-link">library(MitoPilot)</a></code> to load
-the package.</p>
+<p>To load the MitoPilot R package, run <code><a href="https://github.com/Smithsonian/MitoPilot" class="external-link">library(MitoPilot)</a></code>
+within your RStudio server session. You can now utilize all of
+MitoPilot’s functions, such as <a href="https://smithsonian.github.io/MitoPilot/#initializing-a-project">initializing
+a project</a> or <a href="https://smithsonian.github.io/MitoPilot/#running-the-pipeline">opening
+the R Shiny GUI</a>.</p>
 <p>Want to learn how to use MitoPilot? Check out the <a href="https://Smithsonian.github.io/MitoPilot/articles/test-project.html" class="external-link">Test
 Project Tutorial</a>.</p>
 </div>
@@ -223,25 +264,25 @@ should appear.</p>
 Nextflow command and create a submission script. We have provided a
 template below. You may wish to modify the job name (<code>-N</code>)
 and the log file name (<code>-o</code>).</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co">#!/bin/sh</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#$ -N MitoPilot_assembly # MODIFY THIS IF DESIRED</span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#$ -o MitoPilot_assembly.log # MODIFY THIS IF DESIRED</span></span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#$ -cwd -j y</span></span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#$ -q lTWFM.sq</span></span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#$ -l wfmq</span></span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#$ -pe mthread 2</span></span>
-<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#$ -S /bin/sh</span></span>
-<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a></span>
-<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="bu">echo</span> + <span class="kw">`</span><span class="fu">date</span><span class="kw">`</span> job <span class="va">$JOB_NAME</span> started in <span class="va">$QUEUE</span> with jobID=<span class="va">$JOB_ID</span> on <span class="va">$HOSTNAME</span></span>
-<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a></span>
-<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="bu">source</span> ~/.bashrc</span>
-<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a></span>
-<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="ex">module</span> load tools/java/21.0.2 <span class="co"># required for Nextflow on Hydra</span></span>
-<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a></span>
-<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co"># NEXTFLOW COMMAND, example below</span></span>
-<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="ex">nextflow</span> <span class="at">-log</span> /pool/public/genomics/macguigand/MitoPilot/22030FL-06-02/run_02/.logs/nextflow.log run /home/macguigand/R/x86_64-pc-linux-gnu-library/4.4/MitoPilot/nextflow <span class="at">-c</span> /pool/public/genomics/macguigand/MitoPilot/22030FL-06-02/run_02/.config <span class="at">-entry</span> WF1</span>
-<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a></span>
-<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="bu">echo</span> = <span class="kw">`</span><span class="fu">date</span><span class="kw">`</span> job <span class="va">$JOB_NAME</span> done</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co">#!/bin/sh</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co">#$ -N MitoPilot_assembly # MODIFY THIS IF DESIRED</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">#$ -o MitoPilot_assembly.log # MODIFY THIS IF DESIRED</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#$ -cwd -j y</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#$ -q lTWFM.sq</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#$ -l wfmq</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#$ -pe mthread 2</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#$ -S /bin/sh</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="bu">echo</span> + <span class="kw">`</span><span class="fu">date</span><span class="kw">`</span> job <span class="va">$JOB_NAME</span> started in <span class="va">$QUEUE</span> with jobID=<span class="va">$JOB_ID</span> on <span class="va">$HOSTNAME</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="bu">source</span> ~/.bashrc</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="ex">module</span> load tools/java/21.0.2 <span class="co"># required for Nextflow on Hydra</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co"># NEXTFLOW COMMAND, example below</span></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="ex">nextflow</span> <span class="at">-log</span> /pool/public/genomics/macguigand/MitoPilot/22030FL-06-02/run_02/.logs/nextflow.log run /home/macguigand/R/x86_64-pc-linux-gnu-library/4.4/MitoPilot/nextflow <span class="at">-c</span> /pool/public/genomics/macguigand/MitoPilot/22030FL-06-02/run_02/.config <span class="at">-entry</span> WF1</span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="bu">echo</span> = <span class="kw">`</span><span class="fu">date</span><span class="kw">`</span> job <span class="va">$JOB_NAME</span> done</span></code></pre></div>
 <div class="alert alert-note">
 <p><strong>Note:</strong> You must use the options
 <code>-q lTWFM.sq</code> and <code>-l wfmq</code>. This is a special
