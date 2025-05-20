@@ -131,8 +131,8 @@ By logging in with your Hydra account credentials, users will have access to the
 ***Notes:***
 
 1. This is a shared resource and should be used accordingly. Long running jobs or jobs requiring the entire resources of the server would be more appropriate as a job submission.
-2. This server is only accessible from trusted computers, not on the public internet. For technical reasons, to access this resource via telework.si.edu, go to [https://galaxy.si.edu](https://galaxy.si.edu) and then choose the "R4 v443" option.
-3. This is a new resource - please be patient as we test this offering with our user community. We will evaluate this test once Hydra is moved to the new datacenter and decide whether it should be kept or altered in any way.
+2. This server is only accessible from trusted computers, not on the public internet. However, if you can access Hydra, you should be able to access this server. For technical reasons, to access this resource via telework.si.edu, go to [https://galaxy.si.edu](https://galaxy.si.edu) and then choose the "R4 v443" option.
+3. This is a new resource - please be patient as we test this offering with our user community. We will evaluate this test once Hydra is moved to the new data center and decide whether it should be kept or altered in any way.
 
 ## Installing MitoPilot
 
