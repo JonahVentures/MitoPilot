@@ -300,18 +300,18 @@ annotations_details_server <- function(id, rv) {
     output$coverage_plot <- shiny::renderImage({
       req(rv$coverage_plot, rv$coverage)
 
-      # Temporary file with .jpg extension
-      outfile <- tempfile(fileext = ".jpg")
+      # Temporary file with .png extension
+      outfile <- tempfile(fileext = ".png")
 
-      # Save the combined plot as JPEG
-      grDevices::jpeg(outfile, width = rv$updating$length, height = 150, units = "px", quality = 100)
+      # Save the combined plot as PNG
+      grDevices::png(outfile, width = rv$updating$length, height = 150, units = "px", res = 72)
       combined_plot <- rv$coverage_plot / rv$genes_plot + patchwork::plot_layout(heights = c(3, 1))
       print(combined_plot)
       dev.off()
 
       list(
         src = outfile,
-        contentType = "image/jpeg",
+        contentType = "image/png",
         width = rv$updating$length,
         height = 150,
         alt = "Coverage Map"
