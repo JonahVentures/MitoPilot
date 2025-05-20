@@ -297,32 +297,32 @@ annotations_details_server <- function(id, rv) {
       #plotOutput(ns("coverage_plot"), width = paste0(rv$updating$length, "px"), height = "125px")  # OLD CODE, problems with Cairo
       shiny::imageOutput(ns("coverage_plot"), width = paste0(rv$updating$length, "px"), height = "125px")
     })
-    output$coverage_plot <- shiny::renderImage({
-      req(rv$coverage_plot, rv$coverage)
-
-      # Temporary file with .png extension
-      outfile <- tempfile(fileext = ".png")
-
-      # Save the combined plot as PNG
-      grDevices::png(outfile, width = rv$updating$length, height = 150, units = "px", res = 72)
-      combined_plot <- rv$coverage_plot / rv$genes_plot + patchwork::plot_layout(heights = c(3, 1))
-      print(combined_plot)
-      dev.off()
-
-      list(
-        src = outfile,
-        contentType = "image/png",
-        width = rv$updating$length,
-        height = 150,
-        alt = "Coverage Map"
-      )
-    }, deleteFile = TRUE)
-    # OLD CODE, problems with Cairo
-    # output$coverage_plot <- renderPlot({
+    # output$coverage_plot <- shiny::renderImage({
     #   req(rv$coverage_plot, rv$coverage)
-    #   combined_plot <- rv$coverage_plot / rv$genes_plot + plot_layout(heights = c(3, 1))
+    #
+    #   # Temporary file with .png extension
+    #   outfile <- tempfile(fileext = ".png")
+    #
+    #   # Save the combined plot as PNG
+    #   grDevices::png(outfile, width = rv$updating$length, height = 150, units = "px", res = 72)
+    #   combined_plot <- rv$coverage_plot / rv$genes_plot + patchwork::plot_layout(heights = c(3, 1))
     #   print(combined_plot)
-    # })
+    #   dev.off()
+    #
+    #   list(
+    #     src = outfile,
+    #     contentType = "image/png",
+    #     width = rv$updating$length,
+    #     height = 150,
+    #     alt = "Coverage Map"
+    #   )
+    # }, deleteFile = TRUE)
+    # OLD CODE, problems with Cairo
+    output$coverage_plot <- renderPlot({
+     req(rv$coverage_plot, rv$coverage)
+     combined_plot <- rv$coverage_plot / rv$genes_plot + plot_layout(heights = c(3, 1))
+       print(combined_plot)
+    })
     ## Auto scroll ----
     observeEvent(selected(), {
       req(selected())
