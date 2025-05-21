@@ -47,8 +47,8 @@ params_starfish_mito <- function(alt = list()) {
         max_len = 1000
       ),
       nad1 = list(
-        type = "PCG"
-        #start_codons = c("ATG", "GTG", "ATA", "ATT", "TTA", "ATC", "TTG")
+        type = "PCG",
+        start_codons = c("ATG", "GTG", "TTG") # "TTG" present in some RefSeq nad1 starfish
       ),
       nad2 = list(
         type = "PCG"
@@ -59,7 +59,6 @@ params_starfish_mito <- function(alt = list()) {
       ),
       cox2 = list(
         type = "PCG"
-        #start_codons = c("ATG", "GTG", "ATA", "ATT", "TTA", "ATC", "TTG")
       ),
       atp8 = list(
         type = "PCG",
@@ -68,17 +67,18 @@ params_starfish_mito <- function(alt = list()) {
       atp6 = list(
         type = "PCG",
         overlap = list(start = 20, stop = F)
-        #start_codons = c("ATG", "GTG", "ATA", "ATT", "TTA", "ATC", "CTG")
       ),
       cox3 = list(
         type = "PCG"
       ),
       nad3 = list(
-        type = "PCG"
+        type = "PCG",
+        start_codon = c("ATG", "GTG", "ATT", "TTG") # "TTG" and "ATT" present in some RefSeq nad3 starfish
       ),
       nad4l = list(
         type = "PCG",
-        overlap = list(start = 2, stop = T)
+        overlap = list(start = 2, stop = T),
+        start_codon = c("ATG", "GTG", "ATT", "ATC", "GTT") # "ATT", "ATC", "GTT" present in some RefSeq nad4l starfish
       ),
       nad4 = list(
         type = "PCG",
