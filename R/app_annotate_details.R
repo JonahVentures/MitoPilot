@@ -186,7 +186,6 @@ annotations_details_server <- function(id, rv) {
       # Update Annotate table counts
       retained_annotations <- rv$annotations |>
         dplyr::filter(!stringr::str_detect(gene, "_DELETED_"))
-      str(retained_annotations)
       rv$updating$PCGCount = sum(retained_annotations$type == "PCG")
       rv$updating$tRNACount = sum(retained_annotations$type == "tRNA")
       rv$updating$rRNACount = sum(retained_annotations$type == "rRNA")
