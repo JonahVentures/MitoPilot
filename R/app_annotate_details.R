@@ -24,6 +24,7 @@ annotations_details_server <- function(id, rv) {
             .default = NA_character_
           )
         )
+
       ## Load coverage ----
       # TODO - get from db (need to fix NA="" issue)
       rv$coverage <- file.path(
@@ -64,13 +65,19 @@ annotations_details_server <- function(id, rv) {
           width = "100%",
           onClick = "select",
           selection = "single",
+          filterable = TRUE,
           defaultPageSize = 50,
           height = 250,
           rowStyle = rt_highlight_row(),
           defaultColDef = colDef(maxWidth = 80, align = "center", show = F),
           columns = list(
             type = colDef(show = T, align = "left"),
-            gene = colDef(show = T, align = "left"),
+            gene = colDef(show = T,
+                          align = "left",
+                          maxWidth = 300,
+                          resizable = TRUE,
+                          html = T,
+                          cell = rt_longtext()),
             pos1 = colDef(show = T),
             pos2 = colDef(show = T),
             length = colDef(show = T),
@@ -80,14 +87,16 @@ annotations_details_server <- function(id, rv) {
               maxWidth = 1000,
               html = T,
               cell = rt_longtext(),
-              align = "left"
+              align = "left",
+              resizable = TRUE
             ),
             warnings = colDef(
               show = T,
               maxWidth = 1000,
               html = T,
               cell = rt_longtext(),
-              align = "left"
+              align = "left",
+              resizable = TRUE
             ),
             fas = colDef(
               name = "", show = T, html = T, width = 60, sticky = "right",
@@ -174,6 +183,23 @@ annotations_details_server <- function(id, rv) {
         )
         req(F)
       }
+      # Update Annotate table counts
+      retained_annotations <- rv$annotations |>
+        dplyr::filter(!stringr::str_detect(gene, "_DELETED_"))
+      str(retained_annotations)
+      rv$updating$PCGCount = sum(retained_annotations$type == "PCG")
+      rv$updating$tRNACount = sum(retained_annotations$type == "tRNA")
+      rv$updating$rRNACount = sum(retained_annotations$type == "rRNA")
+      dplyr::tbl(session$userData$con, "annotate") |>
+        dplyr::rows_update(
+          rv$updating[, c("ID", "PCGCount", "tRNACount", "rRNACount")],
+          by = "ID",
+          unmatched = "ignore",
+          copy = TRUE,
+          in_place = TRUE
+        )
+      rv$data <- rv$data |>
+        dplyr::rows_update(rv$updating[, c("ID", "PCGCount", "tRNACount", "rRNACount")], by = "ID")
       rv$annotations <- NULL
       rv$coverage <- NULL
       rv$table_filter <- NULL
@@ -449,7 +475,6 @@ annotations_details_server <- function(id, rv) {
     })
 
     # Delete Annotation ----
-    # TODO - need to update the annotate record with change in counts
     observeEvent(input$delete, {
       if (length(selected()) == 0) {
         shinyWidgets::sendSweetAlert(
@@ -471,7 +496,9 @@ annotations_details_server <- function(id, rv) {
         dplyr::mutate(
           pos1 = 0,
           pos2 = 0,
-          length = 0
+          length = 0,
+          time_stamp = as.numeric(Sys.time()),
+          gene = paste0(rv$annotations[selected(), "gene"], "_DELETED_", as.numeric(Sys.time())) # hack to make sure deleted gene has a unique key (ID + path + scaffold + gene + pos1)
         )
       note <- stringr::str_glue(
         "DELETED: from {rv$annotations$pos1[selected()]}-{rv$annotations$pos2[selected()]}"
